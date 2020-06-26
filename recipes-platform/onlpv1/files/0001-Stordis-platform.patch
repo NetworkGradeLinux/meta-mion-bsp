@@ -1,0 +1,4001 @@
+From aec85816acfee058f5897a37d5e06f93fc9c2d2f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eil=C3=ADs=20N=C3=AD=20Fhlannag=C3=A1in?=
+ <pidge@toganlabs.com>
+Date: Thu, 25 Jun 2020 23:33:43 +0000
+Subject: [PATCH] Storis enablement
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Patch to enable stordis switches
+
+Signed-off-by: Eilís Ní Fhlannagáin <pidge@toganlabs.com>
+
+---
+ Makefile                                      |    5 +
+ .../buster/common/amd64-base-packages.yml     |   20 +
+ .../jessie/common/amd64-base-packages.yml     |   64 +-
+ .../stretch/common/amd64-base-packages.yml    |   10 +-
+ packages/base/amd64/upgrade/PKG.yml           |    6 +-
+ packages/base/amd64/upgrade/builds/Makefile   |   20 +-
+ packages/platforms/Makefile                   |    0
+ packages/platforms/stordis/Makefile           |    1 +
+ .../platforms/stordis/vendor-config/Makefile  |    1 +
+ .../platforms/stordis/vendor-config/PKG.yml   |    1 +
+ .../src/python/stordis/__init__.py            |    7 +
+ packages/platforms/stordis/x86-64/Makefile    |    1 +
+ .../stordis/x86-64/bf2556x-1t/Makefile        |    1 +
+ .../x86-64/bf2556x-1t/modules/Makefile        |    1 +
+ .../stordis/x86-64/bf2556x-1t/modules/PKG.yml |    3 +
+ .../x86-64/bf2556x-1t/modules/builds/Makefile |    9 +
+ .../bf2556x-1t/modules/builds/irq_debug.c     |  148 +++
+ .../stordis/x86-64/bf2556x-1t/onlp/Makefile   |    1 +
+ .../stordis/x86-64/bf2556x-1t/onlp/PKG.yml    |    1 +
+ .../x86-64/bf2556x-1t/onlp/builds/Makefile    |    2 +
+ .../bf2556x-1t/onlp/builds/lib/Makefile       |   53 +
+ .../bf2556x-1t/onlp/builds/onlpdump/Makefile  |   62 +
+ .../builds/x86_64_stordis_bf2556x_1t/.module  |    1 +
+ .../builds/x86_64_stordis_bf2556x_1t/Makefile |   10 +
+ .../module/auto/make.mk                       |   10 +
+ .../module/auto/x86_64_stordis_bf2556x_1t.yml |   55 +
+ .../x86_64_stordis_bf2556x_1t.x               |   16 +
+ .../x86_64_stordis_bf2556x_1t_config.h        |  157 +++
+ .../x86_64_stordis_bf2556x_1t_dox.h           |   26 +
+ .../x86_64_stordis_bf2556x_1t_porting.h       |  107 ++
+ .../x86_64_stordis_bf2556x_1t/module/make.mk  |   12 +
+ .../module/src/Makefile                       |   12 +
+ .../module/src/dpapi/dpapi.h                  |   19 +
+ .../module/src/dpapi/dpapi_fan.h              |   24 +
+ .../module/src/dpapi/dpapi_init.h             |    8 +
+ .../module/src/dpapi/dpapi_psu.h              |   22 +
+ .../module/src/dpapi/dpapi_sfp.h              |   40 +
+ .../module/src/dpapi/dpapi_sys.h              |   60 +
+ .../module/src/dpapi/dpapi_sysled.h           |   32 +
+ .../module/src/dpapi/dpapi_thrml.h            |   20 +
+ .../module/src/fani.c                         |  109 ++
+ .../module/src/ledi.c                         |   61 +
+ .../module/src/make.mk                        |   11 +
+ .../module/src/platform_lib.c                 |   34 +
+ .../module/src/platform_lib.h                 |   96 ++
+ .../module/src/psui.c                         |  118 ++
+ .../module/src/sfpi.c                         |  171 +++
+ .../module/src/sysi.c                         |  130 +++
+ .../module/src/thermali.c                     |   88 ++
+ .../src/x86_64_stordis_bf2556x_1t_config.c    |   92 ++
+ .../src/x86_64_stordis_bf2556x_1t_enums.c     |   12 +
+ .../src/x86_64_stordis_bf2556x_1t_int.h       |   13 +
+ .../src/x86_64_stordis_bf2556x_1t_log.c       |   21 +
+ .../src/x86_64_stordis_bf2556x_1t_log.h       |   14 +
+ .../src/x86_64_stordis_bf2556x_1t_module.c    |   26 +
+ .../src/x86_64_stordis_bf2556x_1t_ucli.c      |   64 ++
+ .../bf2556x-1t/platform-config/Makefile       |    1 +
+ .../bf2556x-1t/platform-config/r0/Makefile    |    1 +
+ .../bf2556x-1t/platform-config/r0/PKG.yml     |   78 ++
+ .../platform-config/r0/bf2556x-1t.init        |  134 +++
+ .../r0/src/etc/sysctl.d/98-hugepages.conf     |    1 +
+ .../platform-config/r0/src/lib/platform.xml   | 1010 +++++++++++++++++
+ .../src/lib/x86-64-stordis-bf2556x-1t-r0.yml  |   32 +
+ .../x86_64_stordis_bf2556x_1t_r0/__init__.py  |   17 +
+ .../platforms/stordis/x86-64/modules/Makefile |    1 +
+ .../platforms/stordis/x86-64/modules/PKG.yml  |    1 +
+ 66 files changed, 3366 insertions(+), 18 deletions(-)
+ mode change 100644 => 100755 Makefile
+ create mode 100755 builds/any/rootfs/buster/common/amd64-base-packages.yml
+ mode change 100644 => 100755 builds/any/rootfs/jessie/common/amd64-base-packages.yml
+ mode change 100644 => 100755 builds/any/rootfs/stretch/common/amd64-base-packages.yml
+ mode change 100644 => 100755 packages/base/amd64/upgrade/PKG.yml
+ mode change 100644 => 100755 packages/base/amd64/upgrade/builds/Makefile
+ mode change 100644 => 100755 packages/platforms/Makefile
+ create mode 100755 packages/platforms/stordis/Makefile
+ create mode 100755 packages/platforms/stordis/vendor-config/Makefile
+ create mode 100755 packages/platforms/stordis/vendor-config/PKG.yml
+ create mode 100755 packages/platforms/stordis/vendor-config/src/python/stordis/__init__.py
+ create mode 100755 packages/platforms/stordis/x86-64/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/modules/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/modules/PKG.yml
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/modules/builds/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/modules/builds/irq_debug.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/PKG.yml
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/lib/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/onlpdump/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/.module
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/auto/make.mk
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/auto/x86_64_stordis_bf2556x_1t.yml
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t.x
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_dox.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_porting.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/make.mk
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_fan.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_init.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_psu.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sfp.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sys.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sysled.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_thrml.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/fani.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/ledi.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/make.mk
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/platform_lib.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/platform_lib.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/psui.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/sfpi.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/sysi.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/thermali.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_config.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_enums.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_int.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_log.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_log.h
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_module.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_ucli.c
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/PKG.yml
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/bf2556x-1t.init
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/etc/sysctl.d/98-hugepages.conf
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/x86-64-stordis-bf2556x-1t-r0.yml
+ create mode 100755 packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/python/x86_64_stordis_bf2556x_1t_r0/__init__.py
+ create mode 100755 packages/platforms/stordis/x86-64/modules/Makefile
+ create mode 100755 packages/platforms/stordis/x86-64/modules/PKG.yml
+
+diff --git a/Makefile b/Makefile
+old mode 100644
+new mode 100755
+index 921bc640..7262b5d6
+--- a/Makefile
++++ b/Makefile
+@@ -5,6 +5,7 @@
+ ############################################################
+ ifneq ($(MAKECMDGOALS),docker)
+ ifneq ($(MAKECMDGOALS),docker-debug)
++ifneq ($(MAKECMDGOALS),docker-verbose)
+ 
+ ifndef ONL
+ $(error Please source the setup.env script at the root of the ONL tree)
+@@ -42,6 +43,7 @@ modclean:
+ 
+ endif
+ endif
++endif
+ 
+ .PHONY: docker
+ 
+@@ -55,6 +57,9 @@ docker_check:
+ docker: docker_check
+ 	@docker/tools/onlbuilder -$(VERSION) --isolate --hostname onlbuilder$(VERSION) --pull --autobuild --non-interactive
+ 
++docker-verbose: docker_check
++	@docker/tools/onlbuilder -$(VERSION) --verbose --isolate --hostname onlbuilder$(VERSION) --pull --autobuild --non-interactive
++
+ # create an interative docker shell, for debugging builds
+ docker-debug: docker_check
+ 	@docker/tools/onlbuilder -$(VERSION) --isolate --hostname onlbuilder$(VERSION) --pull
+diff --git a/builds/any/rootfs/buster/common/amd64-base-packages.yml b/builds/any/rootfs/buster/common/amd64-base-packages.yml
+new file mode 100755
+index 00000000..0dd1fafd
+--- /dev/null
++++ b/builds/any/rootfs/buster/common/amd64-base-packages.yml
+@@ -0,0 +1,20 @@
++############################################################
++#
++# Common packages for all amd64 systems.
++#
++############################################################
++- dmidecode
++- parted
++- smartmontools
++- grub2
++- onl-upgrade
++- onl-kernel-4.9-lts-x86-64-all-modules
++- onl-kernel-4.9-lts-x86-64-all
++# - onl-kernel-4.14-lts-x86-64-all-modules
++# - onl-kernel-4.19-lts-x86-64-all-modules
++- efibootmgr
++- gdisk
++- acpid
++- gcc
++- g++
++- cmake
+diff --git a/builds/any/rootfs/jessie/common/amd64-base-packages.yml b/builds/any/rootfs/jessie/common/amd64-base-packages.yml
+old mode 100644
+new mode 100755
+index 19731052..e5fddf10
+--- a/builds/any/rootfs/jessie/common/amd64-base-packages.yml
++++ b/builds/any/rootfs/jessie/common/amd64-base-packages.yml
+@@ -8,10 +8,68 @@
+ - smartmontools
+ - grub2
+ - onl-upgrade
+-- hw-management
++# - hw-management
+ - sx-kernel
+ - onl-kernel-3.16-lts-x86-64-all-modules
+-- onl-kernel-4.9-lts-x86-64-all-modules
+-- onl-kernel-4.14-lts-x86-64-all-modules
++- onl-kernel-3.16-lts-x86-64-all # Pulls in headers
++# - onl-kernel-4.9-lts-x86-64-all-modules
++# - onl-kernel-4.14-lts-x86-64-all-modules
++# - onl-kernel-4.19-lts-x86-64-all-modules
+ - efibootmgr
+ - gdisk
++# Original finishes here
++- tftp
++- bison
++- flex
++- vim
++- gcc
++- g++
++- cmake
++- python
++- python-pip
++- python-dev
++- libtool
++- autoconf
++- pkg-config
++- protobuf-compiler
++# From BSP Deps
++- aspell
++- aspell-en
++- cscope
++- curl
++- dictionaries-common
++- ed
++- emacsen-common
++- gcc-4.9-base
++- google-perftools
++- libaspell15
++- libbz2-dev
++- libc-ares2
++- libc-ares-dev
++- libcurl3
++- libelf1
++- libelf-dev
++- libgmp10
++- libgmpxx4ldbl
++- libgoogle-perftools4
++- libgoogle-perftools-dev
++- libnl-3-200
++- libnl-3-dev
++- libnl-route-3-200
++- libnl-route-3-dev
++- libstdc++6-4.9-dbg
++- libtcmalloc-minimal4
++- libunwind8
++- libunwind8-dev
++- libunwind-dev
++- libxml-libxml-perl
++- libxml-namespacesupport-perl
++- libxml-sax-base-perl
++- libxml-sax-perl
++- libxml-simple-perl
++- python-cffi
++# - Unable to find python-ipaddress
++- python-pycparser
++- python-pyparsing
++- python-scapy
++- unzip
+\ No newline at end of file
+diff --git a/builds/any/rootfs/stretch/common/amd64-base-packages.yml b/builds/any/rootfs/stretch/common/amd64-base-packages.yml
+old mode 100644
+new mode 100755
+index 1b521e23..503011a1
+--- a/builds/any/rootfs/stretch/common/amd64-base-packages.yml
++++ b/builds/any/rootfs/stretch/common/amd64-base-packages.yml
+@@ -8,8 +8,14 @@
+ - smartmontools
+ - grub2
+ - onl-upgrade
+-- hw-management
++# - hw-management
+ - onl-kernel-4.9-lts-x86-64-all-modules
+-- onl-kernel-4.14-lts-x86-64-all-modules
++- onl-kernel-4.9-lts-x86-64-all
++# - onl-kernel-4.14-lts-x86-64-all-modules
++# - onl-kernel-4.19-lts-x86-64-all-modules
+ - efibootmgr
+ - gdisk
++- acpid
++- gcc
++- g++
++- cmake
+\ No newline at end of file
+diff --git a/packages/base/amd64/upgrade/PKG.yml b/packages/base/amd64/upgrade/PKG.yml
+old mode 100644
+new mode 100755
+index 17f16836..597690e2
+--- a/packages/base/amd64/upgrade/PKG.yml
++++ b/packages/base/amd64/upgrade/PKG.yml
+@@ -1,9 +1,11 @@
+ prerequisites:
+     packages:
+       - onl-kernel-3.16-lts-x86-64-all:amd64
+-      - onl-kernel-4.9-lts-x86-64-all:amd64
+-      - onl-kernel-4.14-lts-x86-64-all:amd64
++      # - onl-kernel-4.9-lts-x86-64-all:amd64
++      # - onl-kernel-4.14-lts-x86-64-all:amd64
++      # - onl-kernel-4.19-lts-x86-64-all:amd64
+       - onl-loader-initrd:amd64
++    stage: 3
+ 
+ common:
+   arch: amd64
+diff --git a/packages/base/amd64/upgrade/builds/Makefile b/packages/base/amd64/upgrade/builds/Makefile
+old mode 100644
+new mode 100755
+index 04e6d11b..1eb5c014
+--- a/packages/base/amd64/upgrade/builds/Makefile
++++ b/packages/base/amd64/upgrade/builds/Makefile
+@@ -1,17 +1,15 @@
+ include $(ONL)/make/config.amd64.mk
+ 
+-# All amd64 kernels
+-KERNELS := $(shell $(ONLPM) --find-file onl-kernel-3.16-lts-x86-64-all:amd64 kernel-3.16-lts-x86_64-all) \
+-	   $(shell $(ONLPM) --find-file onl-kernel-4.9-lts-x86-64-all:amd64 kernel-4.9-lts-x86_64-all) \
+-	   $(shell $(ONLPM) --find-file onl-kernel-4.14-lts-x86-64-all:amd64 kernel-4.14-lts-x86_64-all)
++# All amd64 kernels -> $FILES
++$(eval $(call onlpm_find_file_add,X,onl-kernel-3.16-lts-x86-64-all:amd64,kernel-3.16-lts-x86_64-all,FILES))
++# $(eval $(call onlpm_find_file_add,X,onl-kernel-4.9-lts-x86-64-all:amd64,kernel-4.9-lts-x86_64-all,FILES))
++# $(eval $(call onlpm_find_file_add,X,onl-kernel-4.14-lts-x86-64-all:amd64,kernel-4.14-lts-x86_64-all,FILES))
++# $(eval $(call onlpm_find_file_add,X,onl-kernel-4.19-lts-x86-64-all:amd64,kernel-4.19-lts-x86_64-all,FILES))
+ 
+-
+-# Loader initrd
+-INITRD := $(shell $(ONLPM) --find-file onl-loader-initrd:amd64 onl-loader-initrd-amd64.cpio.gz)
+-MANIFEST := $(shell $(ONLPM) --find-file onl-loader-initrd:amd64 manifest.json)
++# Loader initrd and manifest -> $FILES
++$(eval $(call onlpm_find_file_add,X,onl-loader-initrd:amd64,onl-loader-initrd-amd64.cpio.gz,FILES))
++$(eval $(call onlpm_find_file_add,X,onl-loader-initrd:amd64,manifest.json,FILES))
+ 
+ all:
+ 	mkdir -p files
+-	cp $(KERNELS) files
+-	cp $(INITRD) files
+-	cp $(MANIFEST) files
++	cp $(FILES) files
+diff --git a/packages/platforms/Makefile b/packages/platforms/Makefile
+old mode 100644
+new mode 100755
+diff --git a/packages/platforms/stordis/Makefile b/packages/platforms/stordis/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/vendor-config/Makefile b/packages/platforms/stordis/vendor-config/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/vendor-config/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/vendor-config/PKG.yml b/packages/platforms/stordis/vendor-config/PKG.yml
+new file mode 100755
+index 00000000..049a6af3
+--- /dev/null
++++ b/packages/platforms/stordis/vendor-config/PKG.yml
+@@ -0,0 +1 @@
++!include $ONL_TEMPLATES/platform-config-vendor.yml VENDOR=stordis Vendor=Stordis
+diff --git a/packages/platforms/stordis/vendor-config/src/python/stordis/__init__.py b/packages/platforms/stordis/vendor-config/src/python/stordis/__init__.py
+new file mode 100755
+index 00000000..5ea25177
+--- /dev/null
++++ b/packages/platforms/stordis/vendor-config/src/python/stordis/__init__.py
+@@ -0,0 +1,7 @@
++#!/usr/bin/python
++
++from onl.platform.base import *
++
++class OnlPlatformStordis(OnlPlatformBase):
++    MANUFACTURER='Stordis'
++    PRIVATE_ENTERPRISE_NUMBER=70567
+diff --git a/packages/platforms/stordis/x86-64/Makefile b/packages/platforms/stordis/x86-64/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/modules/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/modules/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/modules/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/modules/PKG.yml b/packages/platforms/stordis/x86-64/bf2556x-1t/modules/PKG.yml
+new file mode 100755
+index 00000000..fe3a2afc
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/modules/PKG.yml
+@@ -0,0 +1,3 @@
++# !include $ONL_TEMPLATES/platform-modules.yml VENDOR=stordis BASENAME=x86-64-stordis-bf2556x-1t ARCH=amd64 KERNELS="onl-kernel-3.16-lts-x86-64-all:amd64"
++!include $ONL_TEMPLATES/platform-modules.yml VENDOR=stordis BASENAME=x86-64-stordis-bf2556x-1t ARCH=amd64 KERNELS="onl-kernel-4.19-lts-x86-64-all:amd64"
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/modules/builds/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/modules/builds/Makefile
+new file mode 100755
+index 00000000..b6946f4f
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/modules/builds/Makefile
+@@ -0,0 +1,9 @@
++KERNELS := onl-kernel-3.16-lts-x86-64-all:amd64
++# KERNELS := onl-kernel-4.19-lts-x86-64-all:amd64
++# KERNELS := onl-kernel-4.19-lts-x86-64-all:amd64
++KMODULES := $(wildcard *.c)
++VENDOR := stordis
++BASENAME := x86-64-stordis-bf2556x-1t
++ARCH := x86_64
++include $(ONL)/make/kmodule.mk
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/modules/builds/irq_debug.c b/packages/platforms/stordis/x86-64/bf2556x-1t/modules/builds/irq_debug.c
+new file mode 100755
+index 00000000..6f8faee3
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/modules/builds/irq_debug.c
+@@ -0,0 +1,148 @@
++
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/interrupt.h>
++#include <linux/debugfs.h>
++#include <asm/siginfo.h>
++
++#include <linux/sched.h>
++
++#include <linux/version.h>
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,0,0)
++#include <linux/sched/signal.h> // added
++#endif
++
++#include <linux/uaccess.h>
++
++MODULE_LICENSE("Dual BSD/GPL"); 
++
++static int irq_num = 19;
++MODULE_PARM_DESC(irq_num,  "debug which irq number");
++module_param(irq_num, int, 0644);
++struct dentry *irq_file;
++static struct task_struct *user_task = NULL;
++static struct siginfo info;
++
++static void *irq_dev_id = (void *)&irq_num;
++static struct tasklet_struct tasklet; 
++
++void irq_debug_tasklet(unsigned long data)
++{
++	int ret = 0;
++	
++	//printk("%s called (%ld, %ld, %ld)\n", __func__, in_irq(), in_softirq(), in_interrupt());
++
++	/* send the signal */
++	if(user_task)
++	{
++		ret = send_sig_info(SIGUSR1, &info, user_task);	   //send the signal
++		if(ret < 0)
++		{
++			pr_err("irq_debug error sending signal\n");
++		}
++	}
++	
++} 
++
++static ssize_t write_pid(struct file *file, const char __user *buf,
++								size_t count, loff_t *ppos)
++{
++	char tmp_buf[10];
++	int pid = 0;
++	int ret;
++	
++	/* read the value from user space */
++	if(count > sizeof(tmp_buf))
++	{
++		return -EINVAL;
++	}
++	copy_from_user(tmp_buf, buf, count);
++	sscanf(tmp_buf, "%d", &pid);
++	//pr_info("pid = %d\n", pid);
++ 
++	/* prepare the signal */
++	memset(&info, 0x0, sizeof(struct siginfo));
++	info.si_signo = SIGUSR1;
++	/*
++	this is bit of a trickery: SI_QUEUE is normally used by sigqueue from user space,
++	and kernel space should use SI_KERNEL. But if SI_KERNEL is used the real_time data 
++	is not delivered to the user space signal handler function. 
++	*/
++	info.si_code = SI_QUEUE;
++	/* real time signals may have 32 bits of data. */
++	info.si_int = 1234;
++ 
++	rcu_read_lock();
++	/* find the task with that pid */
++	user_task = pid_task(find_pid_ns(pid, &init_pid_ns), PIDTYPE_PID);	
++	if(user_task == NULL)
++	{
++		pr_err("irq_debug no such pid\n");
++		rcu_read_unlock();
++		return -ENODEV;
++	}
++	rcu_read_unlock();
++ 
++	/* send the signal */
++	ret = send_sig_info(SIGUSR1, &info, user_task);	   //send the signal
++	if(ret < 0)
++	{
++		pr_err("irq_debug error sending signal\n");
++		return ret;
++	}
++ 
++	return count;
++}
++
++irqreturn_t irq_debug_isr(int irq, void *dev_instance)
++{ 
++	if(printk_ratelimit())
++	{ 
++		//printk(KERN_INFO "irq_debug %s: irq %d (%ld, %ld, %ld)\n", __func__, irq, in_irq(), in_softirq(), in_interrupt()); 
++	}
++	
++	tasklet_schedule(&tasklet);
++	
++	return IRQ_NONE; 
++} 
++
++static const struct file_operations irq_fops =
++{
++	.write = write_pid,
++};
++
++static int irq_debug_init(void)
++{ 
++	int ret = 0;
++	char buf[32];
++	
++	printk(KERN_ALERT "irq_debug driver installed.\n"); 
++
++	tasklet_init(&tasklet, irq_debug_tasklet, 0); 
++	ret = request_irq(irq_num, irq_debug_isr, IRQF_SHARED, "irq_debug", irq_dev_id); 
++
++	if (ret)
++	{ 
++		printk("request_irq() failed (%d)\n", ret); 
++		return (ret); 
++	} 
++
++	memset(buf, 0x0, sizeof(buf));
++	sprintf(buf, "reg_pid_for_irq%d", irq_num);
++	irq_file = debugfs_create_file(buf, 0200, NULL, NULL, &irq_fops);
++	
++	return 0; 
++} 
++
++static void irq_debug_exit(void)
++{ 
++	printk(KERN_ALERT "irq_debug driver removed\n"); 
++	tasklet_kill(&tasklet); 
++	free_irq(irq_num, irq_dev_id);
++	debugfs_remove(irq_file);
++} 
++
++module_init(irq_debug_init); 
++module_exit(irq_debug_exit); 
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/PKG.yml b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/PKG.yml
+new file mode 100755
+index 00000000..f7f45626
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/PKG.yml
+@@ -0,0 +1 @@
++!include $ONL_TEMPLATES/onlp-platform-any.yml PLATFORM=x86-64-stordis-bf2556x-1t ARCH=amd64 REVISION=r0 TOOLCHAIN=x86_64-linux-gnu
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/Makefile
+new file mode 100755
+index 00000000..e7437cb2
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/Makefile
+@@ -0,0 +1,2 @@
++FILTER=src
++include $(ONL)/make/subdirs.mk
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/lib/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/lib/Makefile
+new file mode 100755
+index 00000000..0fa67368
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/lib/Makefile
+@@ -0,0 +1,53 @@
++############################################################
++# <bsn.cl fy=2014 v=onl>
++#
++#           Copyright 2014 BigSwitch Networks, Inc.
++#
++# Licensed under the Eclipse Public License, Version 1.0 (the
++# "License"); you may not use this file except in compliance
++# with the License. You may obtain a copy of the License at
++#
++#        http://www.eclipse.org/legal/epl-v10.html
++#
++# Unless required by applicable law or agreed to in writing,
++# software distributed under the License is distributed on an
++# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++# either express or implied. See the License for the specific
++# language governing permissions and limitations under the
++# License.
++#
++# </bsn.cl>
++############################################################
++#
++#
++############################################################
++# include $(ONL)/make/config.amd64.mk
++
++# MODULE := libonlp-x86-64-stordis-bf2556x-1t
++# include $(BUILDER)/standardinit.mk
++
++# DEPENDMODULES := AIM IOF x86_64_stordis_bf2556x_1t onlplib
++# DEPENDMODULE_HEADERS := sff
++
++# include $(BUILDER)/dependmodules.mk
++
++# SHAREDLIB := libonlp-x86-64-stordis-bf2556x-1t.so
++# $(SHAREDLIB)_TARGETS := $(ALL_TARGETS)
++# include $(BUILDER)/so.mk
++# .DEFAULT_GOAL := $(SHAREDLIB)
++
++# GLOBAL_CFLAGS += -I$(onlp_BASEDIR)/module/inc
++# GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MODULES_INIT=1 
++# #GLOBAL_CFLAGS += -Wnoerror=unused-function -Wnoerror=unused-function
++# GLOBAL_CFLAGS += -fPIC
++# LIBDPAPI := $(ONL)/packages/platforms/stordis/x86-64/dpapi/libdpapi.a
++# GLOBAL_LINK_LIBS += -lpthread -ldl -lz $(LIBDPAPI) -ledit
++
++# include $(BUILDER)/targets.mk
++
++
++
++PLATFORM := x86-64-stordis-bf2556x-1t
++LIBDPAPI := $(ONL)/packages/platforms/stordis/x86-64/dpapi/libdpapi.a
++GLOBAL_LINK_LIBS += $(LIBDPAPI) -ldl -lz
++include $(ONL)/packages/base/any/onlp/builds/platform/libonlp-platform.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/onlpdump/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/onlpdump/Makefile
+new file mode 100755
+index 00000000..a09f466e
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/onlpdump/Makefile
+@@ -0,0 +1,62 @@
++############################################################
++# <bsn.cl fy=2014 v=onl>
++#
++#           Copyright 2014 BigSwitch Networks, Inc.
++#
++# Licensed under the Eclipse Public License, Version 1.0 (the
++# "License"); you may not use this file except in compliance
++# with the License. You may obtain a copy of the License at
++#
++#        http://www.eclipse.org/legal/epl-v10.html
++#
++# Unless required by applicable law or agreed to in writing,
++# software distributed under the License is distributed on an
++# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++# either express or implied. See the License for the specific
++# language governing permissions and limitations under the
++# License.
++#
++# </bsn.cl>
++############################################################
++
++# Working
++# ==================
++
++# PLATFORM := x86-64-stordis-bf2556x-1t
++
++# # Common gets ARCH eventually
++# include $(ONL)/packages/base/any/onlp/builds/platform/common.mk
++
++# .DEFAULT_GOAL := onlps
++
++# MODULE := onlps
++# include $(BUILDER)/standardinit.mk
++
++# DEPENDMODULES := $(DEPENDMODULES) AIM IOF onlp onlplib $(PLATFORM_MODULE) $(EXTRA_MODULES) sff cjson cjson_util timer_wheel OS uCli ELS onlp_platform_defaults
++
++# include $(BUILDER)/dependmodules.mk
++
++# BINARY := onlps
++# $(BINARY)_LIBRARIES := $(LIBRARY_TARGETS)
++# include $(BUILDER)/bin.mk
++
++# GLOBAL_CFLAGS += -DAIM_CONFIG_AIM_MAIN_FUNCTION=onlpdump_main
++# GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MODULES_INIT=1
++# GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MAIN=1
++# GLOBAL_CFLAGS += -DUCLI_CONFIG_INCLUDE_ELS_LOOP=1
++# GLOBAL_CFLAGS += -DONLP_CONFIG_INCLUDE_UCLI=1
++# GLOBAL_LINK_LIBS += -lpthread -lm -ledit
++
++# LIBDPAPI := $(ONL)/packages/platforms/stordis/x86-64/dpapi/libdpapi.a
++# GLOBAL_LINK_LIBS += $(LIBDPAPI) -ldl -lz
++
++# include $(BUILDER)/targets.mk
++
++
++# Test
++# ====
++
++PLATFORM := x86-64-stordis-bf2556x-1t
++LIBDPAPI := $(ONL)/packages/platforms/stordis/x86-64/dpapi/libdpapi.a
++GLOBAL_LINK_LIBS += $(LIBDPAPI) -ldl -lz
++include $(ONL)/packages/base/any/onlp/builds/platform/onlps.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/.module b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/.module
+new file mode 100755
+index 00000000..a29ccb53
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/.module
+@@ -0,0 +1 @@
++name: x86_64_stordis_bf2556x_1t
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/Makefile
+new file mode 100755
+index 00000000..e787e708
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/Makefile
+@@ -0,0 +1,10 @@
++############################################################
++#
++#
++#
++############################################################
++include $(ONL)/make/config.mk
++
++MODULE := x86_64_stordis_bf2556x_1t
++AUTOMODULE := x86_64_stordis_bf2556x_1t
++include $(BUILDER)/definemodule.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/auto/make.mk b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/auto/make.mk
+new file mode 100755
+index 00000000..4de21561
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/auto/make.mk
+@@ -0,0 +1,10 @@
++###############################################################################
++#
++# x86_64_stordis_bf2556x_1t Autogeneration
++#
++###############################################################################
++
++x86_64_stordis_bf2556x_1t_AUTO_DEFS := module/auto/x86_64_stordis_bf2556x_1t.yml
++x86_64_stordis_bf2556x_1t_AUTO_DIRS := module/inc/x86_64_stordis_bf2556x_1t module/src
++include $(BUILDER)/auto.mk
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/auto/x86_64_stordis_bf2556x_1t.yml b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/auto/x86_64_stordis_bf2556x_1t.yml
+new file mode 100755
+index 00000000..593bbb64
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/auto/x86_64_stordis_bf2556x_1t.yml
+@@ -0,0 +1,55 @@
++###############################################################################
++#
++# x86_64_stordis_bf2556x_1t Autogeneration Definitions.
++#
++###############################################################################
++
++cdefs: &cdefs
++- X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_LOGGING:
++    doc: "Include or exclude logging."
++    default: 1
++- X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT:
++    doc: "Default enabled log options."
++    default: AIM_LOG_OPTIONS_DEFAULT
++- X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT:
++    doc: "Default enabled log bits."
++    default: AIM_LOG_BITS_DEFAULT
++- X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT:
++    doc: "Default enabled custom log bits."
++    default: 0
++- X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB:
++    doc: "Default all porting macros to use the C standard libraries."
++    default: 1
++- X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS:
++    doc: "Include standard library headers for stdlib porting macros."
++    default: X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB
++- X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI:
++    doc: "Include generic uCli support."
++    default: 0
++- X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_DEFAULT_FAN_DIRECTION:
++    doc: "Assume chassis fan direction is the same as the PSU fan direction."
++    default: 0
++- X86_64_STORDIS_BF2556X_1T_CONFIG_SFP_COUNT:
++    doc: "SFP port numbers."
++    default: 64
++- X86_64_STORDIS_BF2556X_1T_CONFIG_FAN_RPM_MAX:
++    doc: "Max fan speed."
++    default: 13000
++
++definitions:
++  cdefs:
++    X86_64_STORDIS_BF2556X_1T_CONFIG_HEADER:
++      defs: *cdefs
++      basename: x86_64_stordis_bf2556x_1t_config
++
++  portingmacro:
++    X86_64_STORDIS_BF2556X_1T:
++      macros:
++        - malloc
++        - free
++        - memset
++        - memcpy
++        - strncpy
++        - vsnprintf
++        - snprintf
++        - strlen
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t.x b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t.x
+new file mode 100755
+index 00000000..068dc5e9
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t.x
+@@ -0,0 +1,16 @@
++/**************************************************************************//**
++ *
++ *
++ *
++ *****************************************************************************/
++
++
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h>
++
++/* <--auto.start.xmacro(ALL).define> */
++/* <auto.end.xmacro(ALL).define> */
++
++/* <--auto.start.xenum(ALL).define> */
++/* <auto.end.xenum(ALL).define> */
++
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h
+new file mode 100755
+index 00000000..fb846cf6
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h
+@@ -0,0 +1,157 @@
++/**************************************************************************//**
++ *
++ * @file
++ * @brief x86_64_stordis_BF2556X_1T Configuration Header
++ *
++ * @addtogroup x86_64_stordis_BF2556X_1T-config
++ * @{
++ *
++ *****************************************************************************/
++#ifndef __X86_64_STORDIS_BF2556X_1T_CONFIG_H__
++#define __X86_64_STORDIS_BF2556X_1T_CONFIG_H__
++
++#ifdef GLOBAL_INCLUDE_CUSTOM_CONFIG
++#include <global_custom_config.h>
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_INCLUDE_CUSTOM_CONFIG
++#include <x86_64_stordis_bf2556x_1t_custom_config.h>
++#endif
++
++/* <auto.start.cdefs(X86_64_STORDIS_BF2556X_1T_CONFIG_HEADER).header> */
++#include <AIM/aim.h>
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_LOGGING
++ *
++ * Include or exclude logging. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_LOGGING
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_LOGGING 1
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT
++ *
++ * Default enabled log options. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT AIM_LOG_OPTIONS_DEFAULT
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT
++ *
++ * Default enabled log bits. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT AIM_LOG_BITS_DEFAULT
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT
++ *
++ * Default enabled custom log bits. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT 0
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB
++ *
++ * Default all porting macros to use the C standard libraries. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB 1
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS
++ *
++ * Include standard library headers for stdlib porting macros. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI
++ *
++ * Include generic uCli support. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI 0
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_DEFAULT_FAN_DIRECTION
++ *
++ * Assume chassis fan direction is the same as the PSU fan direction. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_DEFAULT_FAN_DIRECTION
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_DEFAULT_FAN_DIRECTION 0
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_SFP_COUNT
++ *
++ * SFP port numbers. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_SFP_COUNT
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_SFP_COUNT 64
++#endif
++
++/**
++ * X86_64_STORDIS_BF2556X_1T_CONFIG_FAN_RPM_MAX
++ *
++ * Max fan speed. */
++
++
++#ifndef X86_64_STORDIS_BF2556X_1T_CONFIG_FAN_RPM_MAX
++#define X86_64_STORDIS_BF2556X_1T_CONFIG_FAN_RPM_MAX 13000
++#endif
++
++
++
++/**
++ * All compile time options can be queried or displayed
++ */
++
++/** Configuration settings structure. */
++typedef struct x86_64_stordis_bf2556x_1t_config_settings_s {
++    /** name */
++    const char* name;
++    /** value */
++    const char* value;
++} x86_64_stordis_bf2556x_1t_config_settings_t;
++
++/** Configuration settings table. */
++/** x86_64_stordis_bf2556x_1t_config_settings table. */
++extern x86_64_stordis_bf2556x_1t_config_settings_t x86_64_stordis_bf2556x_1t_config_settings[];
++
++/**
++ * @brief Lookup a configuration setting.
++ * @param setting The name of the configuration option to lookup.
++ */
++const char* x86_64_stordis_bf2556x_1t_config_lookup(const char* setting);
++
++/**
++ * @brief Show the compile-time configuration.
++ * @param pvs The output stream.
++ */
++int x86_64_stordis_bf2556x_1t_config_show(struct aim_pvs_s* pvs);
++
++/* <auto.end.cdefs(X86_64_STORDIS_BF2556X_1T_CONFIG_HEADER).header> */
++
++#include "x86_64_stordis_bf2556x_1t_porting.h"
++
++#endif /* __X86_64_STORDIS_BF2556X_1T_CONFIG_H__ */
++/* @} */
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_dox.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_dox.h
+new file mode 100755
+index 00000000..0dd0887c
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_dox.h
+@@ -0,0 +1,26 @@
++/**************************************************************************//**
++ *
++ * x86_64_stordis_bf2556x_1t Doxygen Header
++ *
++ *****************************************************************************/
++#ifndef __X86_64_STORDIS_BF2556X_1T_DOX_H__
++#define _X86_64_STORDIS_BF2556X_1T_DOX_H__
++
++/**
++ * @defgroup x86_64_stordis_bf2556x_1t x86_64_stordis_bf2556x_1t - x86_64_stordis_bf2556x_1t Description
++ *
++
++The documentation overview for this module should go here.
++
++ *
++ * @{
++ *
++ * @defgroup x86_64_stordis_bf2556x_1t-x86_64_stordis_bf2556x_1t Public Interface
++ * @defgroup x86_64_stordis_bf2556x_1t-config Compile Time Configuration
++ * @defgroup x86_64_stordis_bf2556x_1t-porting Porting Macros
++ *
++ * @}
++ *
++ */
++
++#endif /* __X86_64_STORDIS_BF2556X_1T_DOX_H__ */
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_porting.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_porting.h
+new file mode 100755
+index 00000000..2e064f7f
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/inc/x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_porting.h
+@@ -0,0 +1,107 @@
++/**************************************************************************//**
++ *
++ * @file
++ * @brief x86_64_stordis_wb2448 Porting Macros.
++ *
++ * @addtogroup x86_64_stordis_wb2448-porting
++ * @{
++ *
++ *****************************************************************************/
++#ifndef __X86_64_STORDIS_BF2556X_1T_PORTING_H__
++#define __X86_64_STORDIS_BF2556X_1T_PORTING_H__
++
++
++/* <auto.start.portingmacro(ALL).define> */
++#if X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS == 1
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <stdarg.h>
++#include <memory.h>
++#endif
++
++#ifndef X86_64_STORDIS_BF2556X_1T_MALLOC
++    #if defined(GLOBAL_MALLOC)
++        #define X86_64_STORDIS_BF2556X_1T_MALLOC GLOBAL_MALLOC
++    #elif X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB == 1
++        #define X86_64_STORDIS_BF2556X_1T_MALLOC malloc
++    #else
++        #error The macro X86_64_STORDIS_BF2556X_1T_MALLOC is required but cannot be defined.
++    #endif
++#endif
++
++#ifndef X86_64_STORDIS_BF2556X_1T_FREE
++    #if defined(GLOBAL_FREE)
++        #define X86_64_STORDIS_BF2556X_1T_FREE GLOBAL_FREE
++    #elif X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB == 1
++        #define X86_64_STORDIS_BF2556X_1T_FREE free
++    #else
++        #error The macro X86_64_STORDIS_BF2556X_1T_FREE is required but cannot be defined.
++    #endif
++#endif
++
++#ifndef X86_64_STORDIS_BF2556X_1T_MEMSET
++    #if defined(GLOBAL_MEMSET)
++        #define X86_64_STORDIS_BF2556X_1T_MEMSET GLOBAL_MEMSET
++    #elif X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB == 1
++        #define X86_64_STORDIS_BF2556X_1T_MEMSET memset
++    #else
++        #error The macro X86_64_STORDIS_BF2556X_1T_MEMSET is required but cannot be defined.
++    #endif
++#endif
++
++#ifndef X86_64_STORDIS_BF2556X_1T_MEMCPY
++    #if defined(GLOBAL_MEMCPY)
++        #define X86_64_STORDIS_BF2556X_1T_MEMCPY GLOBAL_MEMCPY
++    #elif X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB == 1
++        #define X86_64_STORDIS_BF2556X_1T_MEMCPY memcpy
++    #else
++        #error The macro X86_64_STORDIS_BF2556X_1T_MEMCPY is required but cannot be defined.
++    #endif
++#endif
++
++#ifndef X86_64_STORDIS_BF2556X_1T_STRNCPY
++    #if defined(GLOBAL_STRNCPY)
++        #define X86_64_STORDIS_BF2556X_1T_STRNCPY GLOBAL_STRNCPY
++    #elif X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB == 1
++        #define X86_64_STORDIS_BF2556X_1T_STRNCPY strncpy
++    #else
++        #error The macro X86_64_STORDIS_BF2556X_1T_STRNCPY is required but cannot be defined.
++    #endif
++#endif
++
++#ifndef X86_64_STORDIS_BF2556X_1T_VSNPRINTF
++    #if defined(GLOBAL_VSNPRINTF)
++        #define X86_64_STORDIS_BF2556X_1T_VSNPRINTF GLOBAL_VSNPRINTF
++    #elif X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB == 1
++        #define X86_64_STORDIS_BF2556X_1T_VSNPRINTF vsnprintf
++    #else
++        #error The macro X86_64_STORDIS_BF2556X_1T_VSNPRINTF is required but cannot be defined.
++    #endif
++#endif
++
++#ifndef X86_64_STORDIS_BF2556X_1T_SNPRINTF
++    #if defined(GLOBAL_SNPRINTF)
++        #define X86_64_STORDIS_BF2556X_1T_SNPRINTF GLOBAL_SNPRINTF
++    #elif X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB == 1
++        #define X86_64_STORDIS_BF2556X_1T_SNPRINTF snprintf
++    #else
++        #error The macro X86_64_STORDIS_BF2556X_1T_SNPRINTF is required but cannot be defined.
++    #endif
++#endif
++
++#ifndef X86_64_STORDIS_BF2556X_1T_STRLEN
++    #if defined(GLOBAL_STRLEN)
++        #define X86_64_STORDIS_BF2556X_1T_STRLEN GLOBAL_STRLEN
++    #elif X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB == 1
++        #define X86_64_STORDIS_BF2556X_1T_STRLEN strlen
++    #else
++        #error The macro X86_64_STORDIS_BF2556X_1T_STRLEN is required but cannot be defined.
++    #endif
++#endif
++
++/* <auto.end.portingmacro(ALL).define> */
++
++
++#endif /* __X86_64_STORDIS_BF2556X_1T_PORTING_H__ */
++/* @} */
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/make.mk b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/make.mk
+new file mode 100755
+index 00000000..0a687441
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/make.mk
+@@ -0,0 +1,12 @@
++###############################################################################
++#
++#
++#
++###############################################################################
++THIS_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
++LIBDPAPI := $(ONL)/packages/platforms/stordis/x86-64/dpapi/libdpapi.a
++x86_64_stordis_bf2556x_1t_INCLUDES := -I $(THIS_DIR)inc
++x86_64_stordis_bf2556x_1t_INTERNAL_INCLUDES := -I $(THIS_DIR)src
++x86_64_stordis_bf2556x_1t_CFLAGS := $(LIBDPAPI)
++x86_64_stordis_bf2556x_1t_DEPENDMODULE_ENTRIES := init:x86_64_stordis_bf2556x_1t ucli:x86_64_stordis_bf2556x_1t
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/Makefile
+new file mode 100755
+index 00000000..007f9ffa
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/Makefile
+@@ -0,0 +1,12 @@
++###############################################################################
++#
++# Local source generation targets.
++#
++###############################################################################
++
++
++include ../../../../init.mk
++
++ucli:
++	$(SUBMODULE_BIGCODE)/tools/uclihandlers.py x86_64_stordis_bf2556x_1t_ucli.c
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi.h
+new file mode 100755
+index 00000000..f8a42166
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi.h
+@@ -0,0 +1,19 @@
++#ifndef __DPAPI_H__
++#define __DPAPI_H__
++
++#include <stdint.h>
++typedef int dpapi_status;
++typedef enum
++{
++    DPAPI_LOG_TRACE, 
++    DPAPI_LOG_DEBUG, 
++    DPAPI_LOG_INFO, 
++    DPAPI_LOG_WARN, 
++    DPAPI_LOG_ERROR, 
++    DPAPI_LOG_FATAL 
++} dpapi_log_level_t;
++
++dpapi_status dpapi_log_level_set(dpapi_log_level_t level);
++dpapi_status dpapi_log_quiet_set(uint8_t enable);
++
++#endif /* __DPAPI_H__ */
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_fan.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_fan.h
+new file mode 100755
+index 00000000..3c0980cd
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_fan.h
+@@ -0,0 +1,24 @@
++#ifndef __DPAPI_FAN_H__
++#define __DPAPI_FAN_H__
++
++#include "dpapi.h"
++
++typedef uint16_t dpapi_fan_percentage;
++typedef enum 
++{
++    DPAPI_FAN_DIR_B2F,
++    DPAPI_FAN_DIR_F2B,
++    DPAPI_FAN_DIR_LAST = DPAPI_FAN_DIR_F2B,
++    DPAPI_FAN_DIR_COUNT,
++    DPAPI_FAN_DIR_INVALID = -1,
++} dpapi_fan_dir_t;
++
++dpapi_status dpapi_fan_init(uint16_t instance);
++dpapi_status dpapi_fan_deinit(uint16_t instance);
++dpapi_status dpapi_fan_percentage_get(uint16_t instance, dpapi_fan_percentage *percentage);
++dpapi_status dpapi_fan_percentage_set(uint16_t instance, dpapi_fan_percentage percentage);
++dpapi_status dpapi_fan_dir_get(uint16_t instance, dpapi_fan_dir_t *dir);
++dpapi_status dpapi_fan_dir_set(uint16_t instance, dpapi_fan_dir_t dir);
++dpapi_status dpapi_fan_is_present(uint16_t instance, uint8_t *present);
++
++#endif /* __DPAPI_FAN_H__ */
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_init.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_init.h
+new file mode 100755
+index 00000000..fcf9f305
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_init.h
+@@ -0,0 +1,8 @@
++#ifndef __DPAPI_INIT_H__
++#define __DPAPI_INIT_H__
++
++#include "dpapi.h"
++
++dpapi_status dpapi_init(void);
++
++#endif /* __DPAPI_INIT_H__ */
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_psu.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_psu.h
+new file mode 100755
+index 00000000..ee526c1f
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_psu.h
+@@ -0,0 +1,22 @@
++#ifndef __DPAPI_PSU_H__
++#define __DPAPI_PSU_H__
++
++#include "dpapi.h"
++
++typedef int dpapi_psu_volt;
++typedef int dpapi_psu_amp;
++typedef int dpapi_psu_watt;
++
++dpapi_status dpapi_psu_init(uint16_t instance);
++dpapi_status dpapi_psu_deinit(uint16_t instance);
++dpapi_status dpapi_psu_model_get(uint16_t instance, char **model);
++dpapi_status dpapi_psu_serial_get(uint16_t instance, char **serial);
++dpapi_status dpapi_psu_volt_get(uint16_t instance, dpapi_psu_volt *volt);
++dpapi_status dpapi_psu_amp_get(uint16_t instance, dpapi_psu_amp *amp);
++dpapi_status dpapi_psu_watt_get(uint16_t instance, dpapi_psu_watt *watt);
++dpapi_status dpapi_psu_eeprom_dump(uint16_t instance, uint8_t *data);
++dpapi_status dpapi_psu_eeprom_readb(uint16_t instance, uint8_t offest, uint8_t len, uint8_t *data);
++dpapi_status dpapi_psu_is_present(uint16_t instance, uint8_t *present);
++dpapi_status dpapi_psu_is_powergood(uint16_t instance, uint8_t *powergood);
++
++#endif /* __DPAPI_PSU_H__ */
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sfp.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sfp.h
+new file mode 100755
+index 00000000..9eacd5f9
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sfp.h
+@@ -0,0 +1,40 @@
++#ifndef __DPAPI_SFP_H__
++#define __DPAPI_SFP_H__
++
++#include "dpapi.h"
++
++typedef uint8_t dpapi_sfp_bitmap;
++typedef uint8_t dpapi_sfp_control_value;
++
++typedef enum
++{
++    DPAPI_SFP_CONTROL_RESET,
++    DPAPI_SFP_CONTROL_RESET_STATE,
++    DPAPI_SFP_CONTROL_RX_LOS,
++    DPAPI_SFP_CONTROL_TX_FAULT,
++    DPAPI_SFP_CONTROL_TX_DISABLE,
++    DPAPI_SFP_CONTROL_TX_DISABLE_CHANNEL,
++    DPAPI_SFP_CONTROL_LP_MODE,
++    DPAPI_SFP_CONTROL_POWER_OVERRIDE,
++    DPAPI_SFP_CONTROL_LAST = DPAPI_SFP_CONTROL_POWER_OVERRIDE,
++    DPAPI_SFP_CONTROL_COUNT,
++    DPAPI_SFP_CONTROL_INVALID = -1,
++} dpapi_sfp_control_t;
++
++dpapi_status dpapi_sfp_init(uint16_t instance);
++dpapi_status dpapi_sfp_deinit(uint16_t instance);
++dpapi_status dpapi_sfp_is_fiber(uint16_t instance, uint8_t *is_fiber);
++dpapi_status dpapi_sfp_is_present(uint16_t instance, uint8_t *present);
++dpapi_status dpapi_sfp_eeprom_read(uint16_t instance, uint8_t data[256]);
++dpapi_status dpapi_sfp_dom_eeprom_read(uint16_t instance, uint8_t data[256]);
++dpapi_status dpapi_sfp_eeprom_readb(uint16_t instance, uint8_t offset, uint8_t *data);
++dpapi_status dpapi_sfp_eeprom_writeb(uint16_t instance, uint8_t offset, uint8_t data);
++dpapi_status dpapi_sfp_control_is_support(uint16_t instance, dpapi_sfp_control_t control, uint8_t *is_support);
++dpapi_status dpapi_sfp_control_get(uint16_t instance, dpapi_sfp_control_t control, dpapi_sfp_control_value *value);
++dpapi_status dpapi_sfp_control_set(uint16_t instance, dpapi_sfp_control_t control, dpapi_sfp_control_value value);
++dpapi_status dpapi_sfp_quantity_of_ports_get(uint8_t *ports);
++dpapi_status dpapi_sfp_bitmap_get(uint8_t *pbmap);
++dpapi_status dpapi_sfp_presence_bitmap_get(uint8_t *pbmap);
++dpapi_status dpapi_sfp_rx_los_bitmap_get(uint8_t *pbmap);
++
++#endif /* __DPAPI_SFP_H__ */
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sys.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sys.h
+new file mode 100755
+index 00000000..83c02ac7
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sys.h
+@@ -0,0 +1,60 @@
++#ifndef __DPAPI_SYS_H__
++#define __DPAPI_SYS_H__
++
++#include "dpapi.h"
++
++typedef struct dpapi_list_links {
++    struct dpapi_list_links *prev;
++    struct dpapi_list_links *next;
++} dpapi_list_links_t;
++
++typedef struct dpapi_list_head {
++    struct dpapi_list_links links;
++} dpapi_list_head_t;
++
++typedef struct dpapi_onie_vendor_ext_s
++{
++    uint8_t size;
++    uint8_t *value;
++}dpapi_onie_vendor_ext_t;
++
++typedef struct dpapi_onie_info_s
++{
++
++    char *product_name;
++    char *part_number;
++    char *serial_number;
++    uint8_t     mac[6];
++    char *manufacture_date;
++    uint8_t     device_version;
++    char *label_revision;
++    char *platform_name;
++    char *onie_version;
++    uint16_t    mac_range;
++    char *manufacturer;
++    char *country_code;
++    char *vendor;
++    char *diag_version;
++    char *service_tag;
++    uint32_t    crc;
++
++    /**
++     * Vendor Extensions list, if available.
++     */
++    dpapi_list_head_t vx_list;
++    
++    /* Internal/debug */
++    char *_hdr_id_string;
++    uint8_t     _hdr_version;
++    uint8_t     _hdr_length;
++    uint8_t     _hdr_valid_crc;
++    uint8_t     _is_valid;
++    dpapi_onie_vendor_ext_t vendor_extension;
++
++} dpapi_onie_info_t;
++
++dpapi_status dpapi_sys_onie_info_get(uint16_t instance, dpapi_onie_info_t *onie_info);
++dpapi_status dpapi_sys_onie_info_set(uint16_t instance, uint8_t opcode, char *value);
++
++
++#endif /* __DPAPI_SYS_H__ */
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sysled.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sysled.h
+new file mode 100755
+index 00000000..332ce90b
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_sysled.h
+@@ -0,0 +1,32 @@
++#ifndef __DPAPI_SYSLED_H__
++#define __DPAPI_SYSLED_H__
++
++#include "dpapi.h"
++
++typedef enum
++{
++    DPAPI_LED_MODE_OFF,
++    DPAPI_LED_MODE_AUTO,
++    DPAPI_LED_MODE_AUTO_BLINKING,
++    DPAPI_LED_MODE_CHAR,
++    DPAPI_LED_MODE_RED,
++    DPAPI_LED_MODE_RED_BLINKING,
++    DPAPI_LED_MODE_ORANGE,
++    DPAPI_LED_MODE_ORANGE_BLINKING,
++    DPAPI_LED_MODE_YELLOW,
++    DPAPI_LED_MODE_YELLOW_BLINKING,
++    DPAPI_LED_MODE_GREEN,
++    DPAPI_LED_MODE_GREEN_BLINKING,
++    DPAPI_LED_MODE_BLUE,
++    DPAPI_LED_MODE_BLUE_BLINKING,
++    DPAPI_LED_MODE_PURPLE,
++    DPAPI_LED_MODE_PURPLE_BLINKING,
++    DPAPI_LED_MODE_LAST = DPAPI_LED_MODE_PURPLE_BLINKING,
++    DPAPI_LED_MODE_COUNT,
++    DPAPI_LED_MODE_INVALID = -1,
++} dpapi_led_mode_t;
++
++dpapi_status dpapi_sysled_mode_set(uint16_t instance, dpapi_led_mode_t mode);
++dpapi_status dpapi_sysled_mode_get(uint16_t instance, dpapi_led_mode_t *mode);
++
++#endif /* __DPAPI_SYSLED_H__ */
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_thrml.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_thrml.h
+new file mode 100755
+index 00000000..5ac5c887
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/dpapi/dpapi_thrml.h
+@@ -0,0 +1,20 @@
++#ifndef __DPAPI_THRML_H__
++#define __DPAPI_THRML_H__
++
++#include "dpapi.h"
++
++typedef int dpapi_thrml_temp;
++
++typedef enum
++{
++    DPAPI_LOW_THRESHOLD,
++    DPAPI_HIGH_THRESHOLD,
++} dpapi_thrml_threshold_t;
++
++dpapi_status dpapi_thrml_init(uint16_t instance);
++dpapi_status dpapi_thrml_deinit(uint16_t instance);
++dpapi_status dpapi_thrml_temp_get(uint16_t instance, dpapi_thrml_temp *temperature);
++dpapi_status dpapi_thrml_limit_get(uint16_t instance, dpapi_thrml_threshold_t type, dpapi_thrml_temp *temperature);
++dpapi_status dpapi_thrml_limit_set(uint16_t instance, dpapi_thrml_threshold_t type, dpapi_thrml_temp temperature);
++
++#endif /* __DPAPI_THRML_H__ */
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/fani.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/fani.c
+new file mode 100755
+index 00000000..eb86774a
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/fani.c
+@@ -0,0 +1,109 @@
++/************************************************************
++ * <bsn.cl fy=2014 v=onl>
++ *
++ *        Copyright 2014, 2015 Big Switch Networks, Inc.
++ *        Copyright 2017 Delta Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ * Fan Platform Implementation Defaults.
++ *
++ ***********************************************************/
++#include <onlp/platformi/fani.h>
++#include "x86_64_stordis_bf2556x_1t_int.h"
++
++#include <stdio.h>
++#include <string.h>
++#include <fcntl.h>
++
++#include "platform_lib.h"
++#include "dpapi/dpapi.h"
++#include "dpapi/dpapi_fan.h"
++
++
++#define FAN_INFO_ENTRY_INIT(_id, _desc)         \
++    {                                           \
++        {                                       \
++            .id = ONLP_FAN_ID_CREATE(_id),      \
++            .description = _desc,               \
++            .poid = 0,                          \
++        },                                      \
++        .status = 0,                            \
++        .caps = (ONLP_FAN_CAPS_GET_PERCENTAGE), \
++    }
++
++
++static onlp_fan_info_t onlp_fan_info[] = {
++    { }, /* Not used */
++    FAN_INFO_ENTRY_INIT(FAN_1_ON_FAN_BOARD, "FanPWM_0"),
++    FAN_INFO_ENTRY_INIT(FAN_2_ON_FAN_BOARD, "FanPWM_0_1"),
++    FAN_INFO_ENTRY_INIT(FAN_3_ON_FAN_BOARD, "FanPWM_1"),
++    FAN_INFO_ENTRY_INIT(FAN_4_ON_FAN_BOARD, "FanPWM_1_1"),
++    FAN_INFO_ENTRY_INIT(FAN_5_ON_FAN_BOARD, "FanPWM_2"),
++    FAN_INFO_ENTRY_INIT(FAN_6_ON_FAN_BOARD, "FanPWM_2_1"),
++    FAN_INFO_ENTRY_INIT(FAN_7_ON_FAN_BOARD, "FanPWM_3"),
++    FAN_INFO_ENTRY_INIT(FAN_8_ON_FAN_BOARD, "FanPWM_3_1")
++};
++
++
++int onlp_fani_init(void)
++{
++    return ONLP_STATUS_OK;
++}
++
++int onlp_fani_hdr_get(onlp_oid_t oid, onlp_oid_hdr_t* hdr)
++{
++    int id = ONLP_OID_ID_GET(oid);
++
++    *hdr = onlp_fan_info[id].hdr;
++    return ONLP_STATUS_OK;
++}
++
++int onlp_fani_info_get(onlp_oid_t oid, onlp_fan_info_t* info)
++{
++    int id = ONLP_OID_ID_GET(oid);
++    uint8_t present = 0;
++    uint16_t percentage = 0;
++
++    *info = onlp_fan_info[id];
++
++    dpapi_fan_is_present(id-1, &present);
++    if (present)
++    {
++        info->status |= ONLP_FAN_STATUS_PRESENT;
++        info->status &= ~(ONLP_FAN_STATUS_FAILED);
++    }
++    else
++    {
++        info->status &= ~(ONLP_FAN_STATUS_PRESENT);
++        return ONLP_STATUS_OK;
++    }
++
++    if(dpapi_fan_percentage_get(id-1, &percentage) != ONLP_STATUS_OK)
++    {
++        info->status |= ONLP_FAN_STATUS_FAILED;
++        info->percentage = 0;
++    }
++    info->percentage = percentage;
++
++    return ONLP_STATUS_OK;
++}
++
++int onlp_fani_ioctl(onlp_oid_t fid, va_list vargs)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/ledi.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/ledi.c
+new file mode 100755
+index 00000000..63124531
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/ledi.c
+@@ -0,0 +1,61 @@
++/************************************************************
++ * <bsn.cl fy=2014 v=onl>
++ *
++ *        Copyright 2014, 2015 Big Switch Networks, Inc.
++ *        Copyright 2017 Delta Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ *
++ ***********************************************************/
++#include <onlp/platformi/ledi.h>
++#include "x86_64_stordis_bf2556x_1t_int.h"
++
++#include <stdio.h>
++#include <string.h>
++#include <fcntl.h>
++
++#include "platform_lib.h"
++
++/*
++ * Get the information for the given LED OID.
++ */
++int onlp_ledi_init(void)
++{
++    return ONLP_STATUS_OK;
++}
++
++int onlp_ledi_info_get(onlp_oid_t id, onlp_led_info_t* info)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;  
++}
++
++int onlp_ledi_set(onlp_oid_t id, int on_or_off)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
++
++int onlp_ledi_ioctl(onlp_oid_t id, va_list vargs)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
++
++int onlp_ledi_mode_set(onlp_oid_t id, onlp_led_mode_t mode)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;  
++}
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/make.mk b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/make.mk
+new file mode 100755
+index 00000000..175e9b1c
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/make.mk
+@@ -0,0 +1,11 @@
++###############################################################################
++#
++# 
++#
++###############################################################################
++
++
++LIBRARY := x86_64_stordis_bf2556x_1t
++$(LIBRARY)_SUBDIR := $(dir $(lastword $(MAKEFILE_LIST)))
++#$(LIBRARY)_LAST := 1
++include $(BUILDER)/lib.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/platform_lib.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/platform_lib.c
+new file mode 100755
+index 00000000..f6500c76
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/platform_lib.c
+@@ -0,0 +1,34 @@
++/************************************************************
++ * <bsn.cl fy=2017 v=onl>
++ *
++ *        Copyright 2017 Delta Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ *
++ *
++ ***********************************************************/
++#include <sys/mman.h>
++#include <errno.h>
++#include <string.h>
++#include <stdio.h>
++#include <unistd.h>
++#include <fcntl.h>
++#include <AIM/aim.h>
++#include <onlp/onlp.h>
++
++#include "platform_lib.h"
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/platform_lib.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/platform_lib.h
+new file mode 100755
+index 00000000..727bb7a9
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/platform_lib.h
+@@ -0,0 +1,96 @@
++/************************************************************
++ * <bsn.cl fy=2017 v=onl>
++ *
++ *        Copyright 2017 Delta Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ *
++ *
++ ***********************************************************/
++#ifndef __PLATFORM_LIB_H__
++#define __PLATFORM_LIB_H__
++
++#include "x86_64_stordis_bf2556x_1t_log.h"
++
++#define NUM_OF_THERMAL_ON_MAIN_BROAD    4
++#define NUM_OF_LED_ON_MAIN_BROAD        8
++#define NUM_OF_PSU_ON_MAIN_BROAD        2
++#define NUM_OF_FAN_ON_MAIN_BROAD        8
++#define NUM_OF_FAN_ON_PSU_BROAD         2
++#define NUM_OF_FAN                      NUM_OF_FAN_ON_MAIN_BROAD + NUM_OF_FAN_ON_PSU_BROAD
++#define NUM_OF_SFP                      48
++#define NUM_OF_QSFP                     8
++                                       
++#define OS_MAX_MSG_SIZE                 100
++
++enum onlp_led_id
++{
++    LED_RESERVED = 0,
++    LED_FAN,
++    LED_SYS,
++    LED_PSU1,
++    LED_PSU2,
++    LED_FAN_TRAY_1,
++    LED_FAN_TRAY_2,
++    LED_FAN_TRAY_3,
++    LED_FAN_TRAY_4
++};
++
++enum onlp_fan_id
++{    
++    FAN_RESERVED = 0,    
++    FAN_1_ON_FAN_BOARD,    
++    FAN_2_ON_FAN_BOARD, 
++    FAN_3_ON_FAN_BOARD,
++    FAN_4_ON_FAN_BOARD,
++    FAN_5_ON_FAN_BOARD,
++    FAN_6_ON_FAN_BOARD,
++    FAN_7_ON_FAN_BOARD,
++    FAN_8_ON_FAN_BOARD
++};
++
++enum onlp_psu_id
++{    
++    PSU_RESERVED = 0,    
++    PSU_1,
++    PSU_2
++};
++
++enum onlp_thermal_id
++{    
++    THERMAL_RESERVED = 0,    
++    THERMAL_1_ON_MAIN_BOARD,
++    THERMAL_2_ON_MAIN_BOARD,
++    THERMAL_3_ON_MAIN_BOARD,
++    THERMAL_4_ON_MAIN_BOARD
++};
++
++enum led_light_mode 
++{
++    LED_MODE_OFF = 0,
++    LED_MODE_GREEN = 1,
++    LED_MODE_RED = 2,
++    LED_MODE_FAN_TRAY_GREEN = 1,
++    LED_MODE_SYS_RED = 3,
++    LED_MODE_FAN_TRAY_AMBER = 0,
++    LED_MODE_GREEN_BLINK = 2,
++    LED_MODE_UNKNOWN
++};
++
++#endif  /* __PLATFORM_LIB_H__ */
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/psui.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/psui.c
+new file mode 100755
+index 00000000..f44e4c17
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/psui.c
+@@ -0,0 +1,118 @@
++/************************************************************
++ * <bsn.cl fy=2014 v=onl>
++ *
++ *        Copyright 2014, 2015 Big Switch Networks, Inc.
++ *        Copyright 2017 Delta Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ *
++ *
++ ***********************************************************/
++#include <onlp/platformi/psui.h>
++#include "x86_64_stordis_bf2556x_1t_int.h"
++
++#include <stdio.h>
++#include <string.h>
++#include <fcntl.h>
++
++#include "platform_lib.h"
++#include "dpapi/dpapi.h"
++#include "dpapi/dpapi_psu.h"
++
++
++#define PSU_INFO_ENTRY_INIT(_id, _desc)    \
++    {                                      \
++        {                                  \
++            .id = ONLP_PSU_ID_CREATE(_id), \
++            .description = _desc,          \
++            .poid = 0,                     \
++        },                                 \
++        .status = 0,                       \
++        .caps = (ONLP_PSU_CAPS_DC12 | ONLP_PSU_CAPS_VOUT | ONLP_PSU_CAPS_POUT), \
++    }
++
++
++static onlp_psu_info_t onlp_psu_info[] = {
++    { }, /* Not used */
++    PSU_INFO_ENTRY_INIT(PSU_1, "PSU 1"),
++    PSU_INFO_ENTRY_INIT(PSU_2, "PSU 2"),
++};
++
++
++int onlp_psui_init(void)
++{
++    return ONLP_STATUS_OK;
++}
++
++int onlp_psui_hdr_get(onlp_oid_t oid, onlp_oid_hdr_t* hdr)
++{
++    int id = ONLP_OID_ID_GET(oid);
++
++    *hdr = onlp_psu_info[id].hdr;
++    return ONLP_STATUS_OK;
++}
++
++int onlp_psui_info_get(onlp_oid_t oid, onlp_psu_info_t* info)
++{
++    int id = ONLP_OID_ID_GET(oid);
++    char *model = NULL, *serial = NULL;
++    uint8_t present = 0;
++
++    *info = onlp_psu_info[id];
++
++    dpapi_psu_is_present(id-1, &present);
++    if(present)
++    {
++        info->status |= ONLP_PSU_STATUS_PRESENT;
++        info->status &= ~(ONLP_PSU_STATUS_FAILED);
++        info->status &= ~(ONLP_PSU_STATUS_UNPLUGGED);
++    }
++    else
++    {
++        info->status |= ONLP_PSU_STATUS_FAILED;
++        info->status &= ~(ONLP_PSU_STATUS_PRESENT);
++        info->status &= ~(ONLP_PSU_STATUS_UNPLUGGED);
++        return ONLP_STATUS_OK;
++    }
++
++    dpapi_psu_model_get(id-1, &model);
++    memset(info->model, 0, sizeof(info->model));
++    if (model)
++    {
++        strncpy(info->model, model, (sizeof(info->model)-1));
++        free(model);
++    }
++
++    dpapi_psu_serial_get(id-1, &serial);
++    memset(info->serial, 0, sizeof(info->serial));
++    if (serial)
++    {
++        strncpy(info->serial, serial, (sizeof(info->serial)-1));
++        free(serial);
++    }
++
++    dpapi_psu_volt_get(id-1,  &(info->mvout));
++    dpapi_psu_watt_get(id-1,  &(info->mpout));
++
++    return ONLP_STATUS_OK;
++}
++
++int onlp_psui_ioctl(onlp_oid_t pid, va_list vargs)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/sfpi.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/sfpi.c
+new file mode 100755
+index 00000000..88a2c517
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/sfpi.c
+@@ -0,0 +1,171 @@
++/************************************************************
++ * <bsn.cl fy=2014 v=onl>
++ *
++ *        Copyright 2014, 2015 Big Switch Networks, Inc.
++ *        Copyright 2017 Delta Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ *
++ ***********************************************************/
++#include <onlp/platformi/sfpi.h>
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h>
++#include "x86_64_stordis_bf2556x_1t_log.h"
++
++#include <stdio.h>
++#include <string.h>
++#include <fcntl.h>
++
++#include "platform_lib.h"
++#include "dpapi/dpapi.h"
++#include "dpapi/dpapi_sfp.h"
++
++
++int onlp_sfpi_init(void)
++{
++    return ONLP_STATUS_OK;
++}
++
++int onlp_sfpi_bitmap_get(onlp_sfp_bitmap_t* bmap)
++{
++    uint8_t i, max_ports;
++
++    if(dpapi_sfp_quantity_of_ports_get(&max_ports) != ONLP_STATUS_OK)
++    {
++        return ONLP_STATUS_E_INVALID;
++    }
++
++    AIM_BITMAP_CLR_ALL(bmap);
++
++    for(i = 1; i <= max_ports; i++) 
++    {
++        AIM_BITMAP_SET(bmap, i);
++    }
++
++    return ONLP_STATUS_OK;
++}
++
++/*
++ * Return 1 if present.
++ * Return 0 if not present.
++ * Return < 0 if error.
++ */
++int onlp_sfpi_is_present(int port)
++{
++    uint8_t present = 0;
++
++    dpapi_sfp_is_present((port-1), &present);
++    return (int)present;
++}
++
++int onlp_sfpi_presence_bitmap_get(onlp_sfp_bitmap_t* dst)
++{
++    uint8_t max_ports, i, *pbmap;
++
++    if(dpapi_sfp_quantity_of_ports_get(&max_ports) != ONLP_STATUS_OK)
++    {
++        return ONLP_STATUS_E_INVALID;
++    }
++
++    pbmap = (uint8_t *)calloc(1, sizeof(uint8_t) * max_ports);
++
++    if(dpapi_sfp_presence_bitmap_get(pbmap) != ONLP_STATUS_OK)
++    {
++        return ONLP_STATUS_E_INVALID;
++    }
++
++    for(i = 0; i < max_ports; i++)
++    {
++        AIM_BITMAP_MOD(dst, (i+1), pbmap[i]);
++    }
++
++    free(pbmap);
++    return ONLP_STATUS_OK;
++}
++
++int onlp_sfpi_eeprom_read(int port, uint8_t data[256])
++{
++    if(dpapi_sfp_eeprom_read((port-1), data) != ONLP_STATUS_OK)
++    {
++        return ONLP_STATUS_E_INVALID;
++    }
++
++    return ONLP_STATUS_OK;
++}
++
++int onlp_sfpi_dev_readb(int port, uint8_t devaddr, uint8_t addr)
++{
++    uint8_t value = 0;
++
++    if (dpapi_sfp_eeprom_readb((port-1), addr, &value) != ONLP_STATUS_OK)
++    {
++        return ONLP_STATUS_E_INVALID;
++    }
++
++    return (int)value;
++}
++
++int onlp_sfpi_dev_writeb(int port, uint8_t devaddr, uint8_t addr, uint8_t value)
++{
++    if (dpapi_sfp_eeprom_writeb((port-1), addr, value) != ONLP_STATUS_OK)
++    {
++        return ONLP_STATUS_E_INVALID;
++    }
++
++    return ONLP_STATUS_OK;
++}
++
++int onlp_sfpi_control_supported(int port, onlp_sfp_control_t control, int* value)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
++
++int onlp_sfpi_control_get(int port, onlp_sfp_control_t control, int* value)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
++
++int onlp_sfpi_control_set(int port, onlp_sfp_control_t control, int value)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
++
++int onlp_sfpi_rx_los_bitmap_get(onlp_sfp_bitmap_t* dst)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
++
++int onlp_sfpi_dom_read(int port, uint8_t data[256])
++{
++    if(port > NUM_OF_SFP)
++    {
++        return ONLP_STATUS_E_UNSUPPORTED;
++    }
++
++    if(dpapi_sfp_dom_eeprom_read((port-1), data) != ONLP_STATUS_OK)
++    {
++        return ONLP_STATUS_E_INVALID;
++    }
++
++    return ONLP_STATUS_OK;
++}
++
++int onlp_sfpi_ioctl(int port, va_list vargs)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/sysi.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/sysi.c
+new file mode 100755
+index 00000000..78b7956e
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/sysi.c
+@@ -0,0 +1,130 @@
++/************************************************************
++ * <bsn.cl fy=2014 v=onl>
++ *
++ *        Copyright 2014, 2015 Big Switch Networks, Inc.
++ *        Copyright 2017 Delta Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ * HardwareVersion: 02
++ *
++ ***********************************************************/
++ 
++#include <onlp/platformi/sysi.h>
++#include <onlplib/crc32.h>
++#include <onlplib/file.h>
++#include <onlp/platformi/sysi.h>
++#include <onlp/platformi/ledi.h>
++#include <onlp/platformi/thermali.h>
++#include <onlp/platformi/fani.h>
++#include <onlp/platformi/psui.h>
++
++#include "x86_64_stordis_bf2556x_1t_log.h"
++#include "platform_lib.h"
++#include "dpapi/dpapi.h"
++#include "dpapi/dpapi_init.h"
++#include "dpapi/dpapi_sys.h"
++
++
++const char* onlp_sysi_platform_get(void)
++{
++    return "x86-64-stordis-bf2556x-1t-r0";
++}
++
++int onlp_sysi_init(void)
++{
++    if(dpapi_init() != ONLP_STATUS_OK){
++        return ONLP_STATUS_E_INVALID;
++    }
++    return ONLP_STATUS_OK;
++}
++
++int
++onlp_sysi_onie_info_get(onlp_onie_info_t* onie)
++{   
++    dpapi_onie_info_t *sys_onie_info;
++    struct dpapi_list_links *prev, *next;
++
++    sys_onie_info = calloc(1,sizeof(dpapi_onie_info_t));
++    memset(sys_onie_info, 0, sizeof(dpapi_onie_info_t));
++    list_init((struct list_head *)&sys_onie_info->vx_list);
++    
++    if(dpapi_sys_onie_info_get(0,sys_onie_info) != ONLP_STATUS_OK)
++    {
++        free(sys_onie_info);
++        return ONLP_STATUS_E_INVALID;
++    }
++ 
++    /* adjust vx_list to point to the one in onie instead of sys_onie_info */
++    prev = sys_onie_info->vx_list.links.prev;
++    next = sys_onie_info->vx_list.links.next;
++    prev->next = (struct dpapi_list_links *)&(onie->vx_list.links);
++    next->prev = (struct dpapi_list_links *)&(onie->vx_list.links);
++
++    memcpy(onie, (uint8_t*)sys_onie_info, sizeof(onlp_onie_info_t));
++
++    free(sys_onie_info);
++    return ONLP_STATUS_OK;   
++}
++
++int onlp_sysi_onie_data_get(uint8_t** data, int* size)
++
++{
++    return ONLP_STATUS_E_UNSUPPORTED;   
++}
++
++int onlp_sysi_platform_info_get(onlp_platform_info_t* pi)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
++
++void onlp_sysi_platform_info_free(onlp_platform_info_t* pi)
++{
++    aim_free(pi->cpld_versions);
++}
++
++int onlp_sysi_oids_get(onlp_oid_t* table, int max)
++{
++    int i;
++    onlp_oid_t* e = table;
++    memset(table, 0, max*sizeof(onlp_oid_t));
++
++    /* 4 Thermal sensors on the chassis */
++    for (i = 1; i <= NUM_OF_THERMAL_ON_MAIN_BROAD; i++)
++    {
++        *e++ = ONLP_THERMAL_ID_CREATE(i);
++    }
++
++    /* 8 FANs on the chassis */
++    for (i = 1; i <= NUM_OF_FAN_ON_MAIN_BROAD; i++)
++    {
++        *e++ = ONLP_FAN_ID_CREATE(i);
++    }
++    
++    /* 2 PSUs on the chassis */
++    for (i = 1; i <= NUM_OF_PSU_ON_MAIN_BROAD; i++)
++    {
++        *e++ = ONLP_PSU_ID_CREATE(i);
++    }
++
++    return 0;
++}
++
++int onlp_sysi_platform_manage_leds(void)
++{ 
++   return ONLP_STATUS_E_UNSUPPORTED;
++}
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/thermali.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/thermali.c
+new file mode 100755
+index 00000000..2fa53fd2
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/thermali.c
+@@ -0,0 +1,88 @@
++/************************************************************
++ * <bsn.cl fy=2014 v=onl>
++ *
++ *        Copyright 2014, 2015 Big Switch Networks, Inc.
++ *        Copyright 2017 Delta Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ * Thermal Sensor Platform Implementation.
++ *
++ ***********************************************************/
++#include <onlp/platformi/thermali.h>
++#include "x86_64_stordis_bf2556x_1t_log.h"
++
++#include <stdio.h>
++#include <string.h>
++#include <fcntl.h>
++
++#include "platform_lib.h"
++#include "dpapi/dpapi.h"
++#include "dpapi/dpapi_thrml.h"
++
++
++#define THERMAL_INFO_ENTRY_INIT(_id, _desc)         \
++    {                                               \
++        {                                           \
++            .id = ONLP_THERMAL_ID_CREATE(_id),      \
++            .description = _desc,                   \
++            .poid = 0,                              \
++        },                                          \
++        .status = ONLP_THERMAL_STATUS_PRESENT,      \
++        .caps = (ONLP_THERMAL_CAPS_GET_TEMPERATURE), \
++    }
++
++
++static onlp_thermal_info_t onlp_thermal_info[] = {
++    { }, /* Not used */
++    THERMAL_INFO_ENTRY_INIT(THERMAL_1_ON_MAIN_BOARD, "Temp_L0"),
++    THERMAL_INFO_ENTRY_INIT(THERMAL_2_ON_MAIN_BOARD, "Temp_L1"),
++    THERMAL_INFO_ENTRY_INIT(THERMAL_3_ON_MAIN_BOARD, "Temp_L2"),
++    THERMAL_INFO_ENTRY_INIT(THERMAL_4_ON_MAIN_BOARD, "Temp_L3")
++};
++
++
++int onlp_thermali_init(void)
++{
++    return ONLP_STATUS_OK;
++}
++
++int onlp_thermali_hdr_get(onlp_oid_t oid, onlp_oid_hdr_t* hdr)
++{
++    int id = ONLP_OID_ID_GET(oid);
++
++    *hdr = onlp_thermal_info[id].hdr;
++    return ONLP_STATUS_OK;
++}
++
++int onlp_thermali_info_get(onlp_oid_t oid, onlp_thermal_info_t* info)
++{
++    int id = ONLP_OID_ID_GET(oid);
++
++    *info = onlp_thermal_info[id];
++    if(dpapi_thrml_temp_get(id-1, &info->mcelsius) != ONLP_STATUS_OK)
++    {
++        return ONLP_STATUS_E_INVALID;
++    }
++
++    return ONLP_STATUS_OK;
++}
++
++int onlp_thermali_ioctl(int id, va_list vargs)
++{
++    return ONLP_STATUS_E_UNSUPPORTED;
++}
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_config.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_config.c
+new file mode 100755
+index 00000000..01d6d752
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_config.c
+@@ -0,0 +1,92 @@
++/**************************************************************************//**
++ *
++ *
++ *
++ *****************************************************************************/
++
++
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h>
++
++/* <auto.start.cdefs(X86_64_STORDIS_BF2556X_1T_CONFIG_HEADER).source> */
++#define __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(_x) #_x
++#define __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(_x) __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(_x)
++x86_64_stordis_bf2556x_1t_config_settings_t x86_64_stordis_bf2556x_1t_config_settings[] =
++{
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_LOGGING
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_LOGGING), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_LOGGING) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_LOGGING(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_STDLIB(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_DEFAULT_FAN_DIRECTION
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_DEFAULT_FAN_DIRECTION), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_DEFAULT_FAN_DIRECTION) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_DEFAULT_FAN_DIRECTION(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_SFP_COUNT
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_SFP_COUNT), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_SFP_COUNT) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_SFP_COUNT(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef X86_64_STORDIS_BF2556X_1T_CONFIG_FAN_RPM_MAX
++    { __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME(X86_64_STORDIS_BF2556X_1T_CONFIG_FAN_RPM_MAX), __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE(X86_64_STORDIS_BF2556X_1T_CONFIG_FAN_RPM_MAX) },
++#else
++{ X86_64_STORDIS_BF2556X_1T_CONFIG_FAN_RPM_MAX(__x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++    { NULL, NULL }
++};
++#undef __x86_64_stordis_bf2556x_1t_config_STRINGIFY_VALUE
++#undef __x86_64_stordis_bf2556x_1t_config_STRINGIFY_NAME
++
++const char*
++x86_64_stordis_bf2556x_1t_config_lookup(const char* setting)
++{
++    int i;
++    for(i = 0; x86_64_stordis_bf2556x_1t_config_settings[i].name; i++) {
++        if(!strcmp(x86_64_stordis_bf2556x_1t_config_settings[i].name, setting)) {
++            return x86_64_stordis_bf2556x_1t_config_settings[i].value;
++        }
++    }
++    return NULL;
++}
++
++int
++x86_64_stordis_bf2556x_1t_config_show(struct aim_pvs_s* pvs)
++{
++    int i;
++    for(i = 0; x86_64_stordis_bf2556x_1t_config_settings[i].name; i++) {
++        aim_printf(pvs, "%s = %s\n", x86_64_stordis_bf2556x_1t_config_settings[i].name, x86_64_stordis_bf2556x_1t_config_settings[i].value);
++    }
++    return i;
++}
++
++/* <auto.end.cdefs(X86_64_STORDIS_BF2556X_1T_CONFIG_HEADER).source> */
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_enums.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_enums.c
+new file mode 100755
+index 00000000..1b4144dc
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_enums.c
+@@ -0,0 +1,12 @@
++/**************************************************************************//**
++ *
++ *
++ *
++ *****************************************************************************/
++
++
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h>
++
++/* <--auto.start.enum(ALL).source> */
++/* <auto.end.enum(ALL).source> */
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_int.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_int.h
+new file mode 100755
+index 00000000..d33a47be
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_int.h
+@@ -0,0 +1,13 @@
++/**************************************************************************//**
++ *
++ * x86_64_stordis_bf2556x_1t Internal Header
++ *
++ *****************************************************************************/
++
++#ifndef __X86_64_STORDIS_BF2556X_1T_INT_H__
++#define __X86_64_STORDIS_BF2556X_1T_INT_H__
++
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h>
++
++
++#endif /* __X86_64_STORDIS_BF2556X_1T_INT_H__ */
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_log.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_log.c
+new file mode 100755
+index 00000000..eb829d61
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_log.c
+@@ -0,0 +1,21 @@
++/**************************************************************************//**
++ *
++ *
++ *
++ *****************************************************************************/
++
++
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h>
++
++#include "x86_64_stordis_bf2556x_1t_log.h"
++/*
++ * x86_64_stordis_bf2556x_1t log struct.
++ */
++AIM_LOG_STRUCT_DEFINE
++(
++    X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_OPTIONS_DEFAULT,
++    X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_BITS_DEFAULT,
++    NULL, /* Custom log map */
++    X86_64_STORDIS_BF2556X_1T_CONFIG_LOG_CUSTOM_BITS_DEFAULT
++);
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_log.h b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_log.h
+new file mode 100755
+index 00000000..7f9d671e
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_log.h
+@@ -0,0 +1,14 @@
++/**************************************************************************//**
++ *
++ * 
++ *
++ *****************************************************************************/
++
++
++#ifndef __X86_64_STORDIS_BF2556X_1T_LOG_H__
++#define __X86_64_STORDIS_BF2556X_1T_LOG_H__
++
++#define AIM_LOG_MODULE_NAME x86_64_stordis_bf2556x_1t
++#include <AIM/aim_log.h>
++
++#endif /* __X86_64_STORDIS_BF2556X_1T_LOG_H__ */
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_module.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_module.c
+new file mode 100755
+index 00000000..b0dd191b
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_module.c
+@@ -0,0 +1,26 @@
++/**************************************************************************//**
++ *
++ *
++ *
++ *****************************************************************************/
++
++
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h>
++
++#include "x86_64_stordis_bf2556x_1t_log.h"
++
++static int
++datatypes_init__(void)
++{
++#define x86_64_STORDIS_BF2556X_1T_ENUMERATION_ENTRY(_enum_name, _desc)     AIM_DATATYPE_MAP_REGISTER(_enum_name, _enum_name##_map, _desc,                               AIM_LOG_INTERNAL);
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t.x>
++    return 0;
++}
++
++void __x86_64_stordis_bf2556x_1t_module_init__(void)
++{
++    AIM_LOG_STRUCT_REGISTER();
++    datatypes_init__();
++}
++
++int __onlp_platform_version__ = 1;
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_ucli.c b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_ucli.c
+new file mode 100755
+index 00000000..4263a00d
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/onlp/builds/x86_64_stordis_bf2556x_1t/module/src/x86_64_stordis_bf2556x_1t_ucli.c
+@@ -0,0 +1,64 @@
++/**************************************************************************//**
++ *
++ *
++ *
++ *****************************************************************************/
++
++
++#include <x86_64_stordis_bf2556x_1t/x86_64_stordis_bf2556x_1t_config.h>
++
++#if X86_64_STORDIS_BF2556X_1T_CONFIG_INCLUDE_UCLI == 1
++
++#include <uCli/ucli.h>
++#include <uCli/ucli_argparse.h>
++#include <uCli/ucli_handler_macros.h>
++
++static ucli_status_t
++x86_64_stordis_bf2556x_1t_ucli_ucli__config__(ucli_context_t* uc)
++{
++    UCLI_HANDLER_MACRO_MODULE_CONFIG(x86_64_stordis_bf2556x_1t)
++}
++
++/* <auto.ucli.handlers.start> */
++/******************************************************************************
++ *
++ * These handler table(s) were autogenerated from the symbols in this
++ * source file.
++ *
++ *****************************************************************************/
++static ucli_command_handler_f x86_64_stordis_bf2556x_1t_ucli_ucli_handlers__[] =
++{
++    x86_64_stordis_bf2556x_1t_ucli_ucli__config__,
++    NULL
++};
++/******************************************************************************/
++/* <auto.ucli.handlers.end> */
++
++static ucli_module_t
++x86_64_stordis_bf2556x_1t_ucli_module__ =
++{
++    "x86_64_stordis_bf2556x_1t_ucli",
++    NULL,
++    x86_64_stordis_bf2556x_1t_ucli_ucli_handlers__,
++    NULL,
++    NULL,
++};
++
++ucli_node_t*
++x86_64_stordis_bf2556x_1t_ucli_node_create(void)
++{
++    ucli_node_t* n;
++    ucli_module_init(&x86_64_stordis_bf2556x_1t_ucli_module__);
++    n = ucli_node_create("x86_64_stordis_bf2556x_1t", NULL, &x86_64_stordis_bf2556x_1t_ucli_module__);
++    ucli_node_subnode_add(n, ucli_module_log_node_create("x86_64_stordis_bf2556x_1t"));
++    return n;
++}
++
++#else
++void*
++x86_64_stordis_bf2556x_1t_ucli_node_create(void)
++{
++    return NULL;
++}
++#endif
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/Makefile b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/PKG.yml b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/PKG.yml
+new file mode 100755
+index 00000000..e7303e68
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/PKG.yml
+@@ -0,0 +1,78 @@
++#!include $ONL_TEMPLATES/platform-config-platform.yml ARCH=amd64 VENDOR=stordis BASENAME=x86-64-stordis-bf2556x-1t REVISION=r0
++
++
++
++variables:
++  PLATFORM : x86-64-stordis-bf2556x-1t-r0
++
++prerequisites:
++  packages:
++    - "onl-vendor-config-stordis:all"
++    - "onl-platform-modules-x86-64-stordis-bf2556x-1t:amd64"
++
++common:
++  version: 1.0.0
++  arch: amd64
++  copyright: Copyright 2013, 2014, 2015 Big Switch Networks
++  maintainer: support@bigswitch.com
++  support: opennetworklinux@googlegroups.com
++  changelog: None
++  dists: $DISTS
++
++packages:
++  - name: onl-platform-config-$PLATFORM
++    depends: onl-vendor-config-stordis,onl-platform-modules-x86-64-stordis-bf2556x-1t
++    summary: ONL Platform Configuration Package for the $PLATFORM
++
++    files:
++      src/lib: /lib/platform-config/$PLATFORM/onl
++      src/python : ${PY_INSTALL}/onl/platform/
++      src/etc: /etc/
++
++      
++    init: $ONL/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/bf2556x-1t.init
++
++  - name: onl-platform-build-$PLATFORM
++    summary: ONL Platform Build Package for the $PLATFORM
++    optional-files:
++      builds: $$PKG_INSTALL
++
++
++
++
++############################################################
++#
++# PKG template for all platform-config packages.
++#
++############################################################
++# variables:
++#   PLATFORM : x86-64-stordis-bf2556x-1t-r0
++
++# prerequisites:
++#   packages:
++#     - "onl-vendor-config-stordis:all"
++#     - "onl-platform-modules-x86-64-stordis-bf2556x-1t:amd64"
++
++# common:
++#   version: 1.0.0
++#   arch: amd64
++#   copyright: Copyright 2013, 2014, 2015 Big Switch Networks
++#   maintainer: support@bigswitch.com
++#   support: opennetworklinux@googlegroups.com
++#   changelog: None
++#   dists: $DISTS
++
++# packages:
++#   - name: onl-platform-config-x86-64-stordis-bf2556x-1t-r0
++#     depends: onl-vendor-config-stordis,onl-platform-modules-x86-64-stordis-bf2556x-1t
++#     summary: ONL Platform Configuration Package for the x86-64-stordis-bf2556x-1t-r0
++
++#     files:
++#       src/lib: /lib/platform-config/x86-64-stordis-bf2556x-1t-r0/onl
++#       src/python : ${PY_INSTALL}/onl/platform/
++#       src/opt: /opt/
++
++#   - name: onl-platform-build-x86-64-stordis-bf2556x-1t-r0
++#     summary: ONL Platform Build Package for the x86-64-stordis-bf2556x-1t
++#     optional-files:
++#       builds: $$PKG_INSTALL
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/bf2556x-1t.init b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/bf2556x-1t.init
+new file mode 100755
+index 00000000..78e0c9da
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/bf2556x-1t.init
+@@ -0,0 +1,134 @@
++#! /usr/bin/env bash
++
++### BEGIN INIT INFO
++# Provides:        bf2556x-1t-config
++# Required-Start:  $syslog $network
++# Required-Stop:   $syslog
++# Default-Start:   2 3 4 5
++# Default-Stop:    0 1 6
++# X-Start-Before:	onlpd onlp-snmpd
++# Short-Description: bf2556x platform configuration
++# Description:        bf2556x platform configuration
++### END INIT INFO
++
++PATH=/sbin:/bin:/usr/sbin:/usr/bin
++
++. /lib/lsb/init-functions
++
++
++PLATFORM=x86-64-stordis-bf2556x-1t
++REVISION=r0
++KERNEL=$(uname -r)
++KERNEL_MAJOR_MINOR=$(uname -r | awk -F. '{print $1 "." $2}')
++LINK=/lib/modules/${KERNEL}/build
++
++NETMODE=$(grep NETAUTO /etc/onl/boot-config | cut -d= -f 2)
++
++
++function print_to_console () {
++	echo $@
++}
++
++
++function safe_link () {
++	local TARGET=$1
++	local LINK=$2
++
++	if [[ ! -e $TARGET ]]; then
++		print_to_console "Target ${TARGET} does not exist"
++		return
++	fi
++
++
++	if [[ -L $LINK ]]; then
++		# Link exists
++		CURRENT_LINK=$(readlink $LINK)
++		if [[ "$CURRENT_LINK" != "$TARGET" ]]; then
++			# Only re-link if target is not what we expected
++			print_to_console "Re-linking ${TARGET} -> ${LINK} (was $CURRENT_LINK)" 
++			OUTPUT=$(ln -sf ${TARGET} ${LINK})
++			print_to_console $OUTPUT
++		fi
++	else
++		# Create folder if doesn't exist
++		mkdir -p $(dirname $LINK)
++
++		print_to_console "Linking ${TARGET} -> ${LINK}" 
++		OUTPUT=$(ln -s ${TARGET} ${LINK})
++		print_to_console $OUTPUT
++	fi
++}
++
++
++function update_dns_from_lease () {
++	# Legacy function, not used currently.
++	DNS_SERVERS=`grep domain-name-servers /var/lib/dhcp/dhclient.leases | awk '{print $3}' | cut -d\; -f1`
++	print_to_console "DNS_SERVERS: $DNS_SERVERS"
++	if [[ $DNS_SERVERS != "" ]]; then
++		IFS=',' read -r -a DNS_SERVER_ARRAY <<< $DNS_SERVERS
++		print_to_console "${DNS_SERVER_ARRAY[@]}: $DNS_SERVERS"
++		for DNS_SERVER in ${DNS_SERVER_ARRAY[@]}; do
++			grep $DNS_SERVER /etc/resolvconf/resolv.conf.d/base
++			if [[ $? == 1 ]]; then
++				print_to_console "Preparing DNS ${DNS_SERVER}"
++				echo nameserver $DNS_SERVER >> /etc/resolvconf/resolv.conf.d/base
++			else 
++				print_to_console "${DNS_SERVER} is already in /etc/resolvconf/resolv.conf.d/base"
++			fi
++		 done
++		 resolvconf -u
++	fi
++}
++
++
++function setup_dns () {
++	if [[ "$NETMODE" != "dhcp" ]]; then
++		print_to_console "Network mode is not DHCP, not running dhclient"
++		return
++	fi
++
++	print_to_console "Running dhclient for DNS settings"
++	dhclient -r -i ma1
++	dhclient -i ma1
++}
++
++
++function disable_automount () {
++	PROC_AUTOMOUNT_STATUS=$(systemctl is-enabled proc-sys-fs-binfmt_misc.automount)
++	if [[ "${PROC_AUTOMOUNT_STATUS}" != "masked" ]]; then
++		print_to_console "Masking proc-sys-fs-binfmt_misc.automount"
++		systemctl mask proc-sys-fs-binfmt_misc.automount
++		systemctl daemon-reload
++	else 
++		print_to_console "proc-sys-fs-binfmt_misc.automount is already masked"
++	fi
++}
++
++function setup_modules () {
++	depmod -a 
++	modprobe irq_debug
++}
++
++# Retrieve DNS settings from DHCP leases as resolvconf is not setup
++# automatically from supplied settings
++# setup_dns
++
++# For some reason, depmod hasn't got around to worry about installed modules,
++# do it instead.
++# setup_modules
++
++# Link ONL Kernel headers to correct build directory.
++safe_link /usr/share/onl/packages/amd64/onl-kernel-${KERNEL_MAJOR_MINOR}-lts-x86-64-all/mbuilds/ /lib/modules/${KERNEL}/build
++
++# Link ONLP platform libraries. This will enable onlpd and onlp-snmpd to start.
++# rm -f /lib/x86_64-linux-gnu/libonlp-platform.so.1 # Is this needed?? If it's already a link, we re-link so not necessary
++# safe_link /lib/platform-config/${PLATFORM}-${REVISION}/onl/lib/libonlp-${PLATFORM}.so /lib/x86_64-linux-gnu/libonlp-platform.so.1
++# safe_link /lib/platform-config/${PLATFORM}-${REVISION}/ /lib/platform-config/current
++
++# Fixing shenanigans with ONLP -- unsure if needed.
++# safe_link /lib/platform-config/${PLATFORM}-${REVISION}/onl/bin/onlps /lib/platform-config/${PLATFORM}-${REVISION}/onl/bin/onlpdump
++
++# Disable automount.
++disable_automount
++
++exit 0
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/etc/sysctl.d/98-hugepages.conf b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/etc/sysctl.d/98-hugepages.conf
+new file mode 100755
+index 00000000..3f97caef
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/etc/sysctl.d/98-hugepages.conf
+@@ -0,0 +1 @@
++vm.nr_hugepages = 256
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml
+new file mode 100755
+index 00000000..796f8f3e
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml
+@@ -0,0 +1,1010 @@
++
++<root>
++<!--
++    Port config : Determine port number and the type of port on platform (copper/sfp)
++-->
++    <port_config port_num="56">
++        <port instance="1" type="sfp"/>
++        <port instance="2" type="sfp"/>
++        <port instance="3" type="sfp"/>
++        <port instance="4" type="sfp"/>
++        <port instance="5" type="sfp"/>
++        <port instance="6" type="sfp"/>
++        <port instance="7" type="sfp"/>
++        <port instance="8" type="sfp"/>
++        <port instance="9" type="sfp"/>
++        <port instance="10" type="sfp"/>
++        <port instance="11" type="sfp"/>
++        <port instance="12" type="sfp"/>
++        <port instance="13" type="sfp"/>
++        <port instance="14" type="sfp"/>
++        <port instance="15" type="sfp"/>
++        <port instance="16" type="sfp"/>
++        <port instance="17" type="sfp"/>
++        <port instance="18" type="sfp"/>
++        <port instance="19" type="sfp"/>
++        <port instance="20" type="sfp"/>
++        <port instance="21" type="sfp"/>
++        <port instance="22" type="sfp"/>
++        <port instance="23" type="sfp"/>
++        <port instance="24" type="sfp"/>
++        <port instance="25" type="sfp"/>
++        <port instance="26" type="sfp"/>
++        <port instance="27" type="sfp"/>
++        <port instance="28" type="sfp"/>
++        <port instance="29" type="sfp"/>
++        <port instance="30" type="sfp"/>
++        <port instance="31" type="sfp"/>
++        <port instance="32" type="sfp"/>
++        <port instance="33" type="sfp"/>
++        <port instance="34" type="sfp"/>
++        <port instance="35" type="sfp"/>
++        <port instance="36" type="sfp"/>
++        <port instance="37" type="sfp"/>
++        <port instance="38" type="sfp"/>
++        <port instance="39" type="sfp"/>
++        <port instance="40" type="sfp"/>
++        <port instance="41" type="sfp"/>
++        <port instance="42" type="sfp"/>
++        <port instance="43" type="sfp"/>
++        <port instance="44" type="sfp"/>
++        <port instance="45" type="sfp"/>
++        <port instance="46" type="sfp"/>
++        <port instance="47" type="sfp"/>
++        <port instance="48" type="sfp"/>
++        <port instance="49" type="sfp"/>
++        <port instance="50" type="sfp"/>
++        <port instance="51" type="sfp"/>
++        <port instance="52" type="sfp"/>
++        <port instance="53" type="sfp"/>
++        <port instance="54" type="sfp"/>
++        <port instance="55" type="sfp"/>
++        <port instance="56" type="sfp"/>
++    </port_config>
++
++    <I2C bus="0">
++            <device name="baseboard-eeprom" slave="0x56">
++                <function type="eeprom" drv="EEPROM">
++                    <resource type="onie-eeprom" res_name="baseboard-eeprom" offset="0x800" dlen="256" alen="2">
++                    </resource>
++                </function>
++            </device>
++
++            <device name="sys-cpld" slave="0x30">
++                <function type="cpld" drv="CPLD">
++                    <resource type="internal" attr="out" offset="0x0f" mask="0x01" match="0x01" res_name="i2c-bus-busy"/>
++                    <resource type="internal" attr="out" offset="0x0f" mask="0x01" match="0x00" res_name="i2c-bus-free"/>
++                 </function>
++            </device>
++
++            <device name="port-cpld-0-31" slave="0x32">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-cpld-0-31"/>
++                <post res_name="port-group-sel-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="cpld" drv="CPLD">
++                    <resource type="present" attr="in" offset="0x01" mask="0x80" match="0x00" res_name="port-0-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x40" match="0x00" res_name="port-1-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x20" match="0x00" res_name="port-2-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x10" match="0x00" res_name="port-3-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x08" match="0x00" res_name="port-4-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x04" match="0x00" res_name="port-5-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x02" match="0x00" res_name="port-6-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x01" match="0x00" res_name="port-7-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x80" match="0x00" res_name="port-8-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x40" match="0x00" res_name="port-9-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x20" match="0x00" res_name="port-10-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x10" match="0x00" res_name="port-11-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x08" match="0x00" res_name="port-12-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x04" match="0x00" res_name="port-13-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x02" match="0x00" res_name="port-14-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x01" match="0x00" res_name="port-15-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x80" match="0x00" res_name="port-16-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x40" match="0x00" res_name="port-17-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x20" match="0x00" res_name="port-18-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x10" match="0x00" res_name="port-19-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x08" match="0x00" res_name="port-20-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x04" match="0x00" res_name="port-21-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x02" match="0x00" res_name="port-22-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x01" match="0x00" res_name="port-23-present"/>
++                    <resource type="present" attr="in" offset="0x04" mask="0x80" match="0x00" res_name="port-24-present"/>
++                    <resource type="present" attr="in" offset="0x04" mask="0x40" match="0x00" res_name="port-25-present"/>
++                    <resource type="present" attr="in" offset="0x04" mask="0x20" match="0x00" res_name="port-26-present"/>
++                    <resource type="present" attr="in" offset="0x04" mask="0x10" match="0x00" res_name="port-27-present"/>
++                    <resource type="present" attr="in" offset="0x04" mask="0x08" match="0x00" res_name="port-28-present"/>
++                    <resource type="present" attr="in" offset="0x04" mask="0x04" match="0x00" res_name="port-29-present"/>
++                    <resource type="present" attr="in" offset="0x04" mask="0x02" match="0x00" res_name="port-30-present"/>
++                    <resource type="present" attr="in" offset="0x04" mask="0x01" match="0x00" res_name="port-31-present"/>
++                 </function>
++            </device>
++
++            <device name="port-cpld-32-55" slave="0x32">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-cpld-32-55"/>
++                <post res_name="port-group-sel-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="cpld" drv="CPLD">
++                    <resource type="present" attr="in" offset="0x01" mask="0x80" match="0x00" res_name="port-32-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x40" match="0x00" res_name="port-33-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x20" match="0x00" res_name="port-34-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x10" match="0x00" res_name="port-35-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x08" match="0x00" res_name="port-36-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x04" match="0x00" res_name="port-37-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x02" match="0x00" res_name="port-38-present"/>
++                    <resource type="present" attr="in" offset="0x01" mask="0x01" match="0x00" res_name="port-39-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x80" match="0x00" res_name="port-40-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x40" match="0x00" res_name="port-41-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x20" match="0x00" res_name="port-42-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x10" match="0x00" res_name="port-43-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x08" match="0x00" res_name="port-44-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x04" match="0x00" res_name="port-45-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x02" match="0x00" res_name="port-46-present"/>
++                    <resource type="present" attr="in" offset="0x02" mask="0x01" match="0x00" res_name="port-47-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x80" match="0x00" res_name="port-48-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x40" match="0x00" res_name="port-49-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x20" match="0x00" res_name="port-50-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x10" match="0x00" res_name="port-51-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x08" match="0x00" res_name="port-52-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x04" match="0x00" res_name="port-53-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x02" match="0x00" res_name="port-54-present"/>
++                    <resource type="present" attr="in" offset="0x03" mask="0x01" match="0x00" res_name="port-55-present"/>
++                 </function>
++            </device>
++
++            <device name="port-group-sel" slave="0x71">
++                <function type="mux" drv="MUX">
++                    <resource type="internal" val="0x01" res_name="port-0-7"/>
++                    <resource type="internal" val="0x02" res_name="port-8-15"/>
++                    <resource type="internal" val="0x04" res_name="port-16-23"/>
++                    <resource type="internal" val="0x08" res_name="port-24-31"/>
++                    <resource type="internal" val="0x10" res_name="port-32-39"/>
++                    <resource type="internal" val="0x20" res_name="port-40-47"/>
++                    <resource type="internal" val="0x40" res_name="port-48-55"/>
++                    <resource type="internal" val="0x80" res_name="port-cpld-0-31"/>
++                    <resource type="internal" val="0x40" res_name="port-cpld-32-55"/>
++                    <resource type="internal" val="0x00" res_name="port-group-sel-post"/>
++                 </function>
++            </device>
++
++            <device name="port-sel-0-7" slave="0x72">
++                <pre res_name="port-0-7"/>
++                <post res_name="port-group-sel-post"/>
++                <function type="mux" drv="MUX">
++                    <resource type="internal" val="0x01" res_name="port-0"/>
++                    <resource type="internal" val="0x02" res_name="port-1"/>
++                    <resource type="internal" val="0x04" res_name="port-2"/>
++                    <resource type="internal" val="0x08" res_name="port-3"/>
++                    <resource type="internal" val="0x10" res_name="port-4"/>
++                    <resource type="internal" val="0x20" res_name="port-5"/>
++                    <resource type="internal" val="0x40" res_name="port-6"/>
++                    <resource type="internal" val="0x80" res_name="port-7"/>
++                    <resource type="internal" val="0x00" res_name="port-sel-0-7-post"/>
++                 </function>
++            </device>
++
++            <device name="port-sel-8-15" slave="0x72">
++                <pre res_name="port-8-15"/>
++                <post res_name="port-group-sel-post"/>
++                <function type="mux" drv="MUX">
++                    <resource type="internal" val="0x01" res_name="port-8"/>
++                    <resource type="internal" val="0x02" res_name="port-9"/>
++                    <resource type="internal" val="0x04" res_name="port-10"/>
++                    <resource type="internal" val="0x08" res_name="port-11"/>
++                    <resource type="internal" val="0x10" res_name="port-12"/>
++                    <resource type="internal" val="0x20" res_name="port-13"/>
++                    <resource type="internal" val="0x40" res_name="port-14"/>
++                    <resource type="internal" val="0x80" res_name="port-15"/>
++                    <resource type="internal" val="0x00" res_name="port-sel-8-15-post"/>
++                 </function>
++            </device>
++
++            <device name="port-sel-16-23" slave="0x72">
++                <pre res_name="port-16-23"/>
++                <post res_name="port-group-sel-post"/>
++                <function type="mux" drv="MUX">
++                    <resource type="internal" val="0x01" res_name="port-16"/>
++                    <resource type="internal" val="0x02" res_name="port-17"/>
++                    <resource type="internal" val="0x04" res_name="port-18"/>
++                    <resource type="internal" val="0x08" res_name="port-19"/>
++                    <resource type="internal" val="0x10" res_name="port-20"/>
++                    <resource type="internal" val="0x20" res_name="port-21"/>
++                    <resource type="internal" val="0x40" res_name="port-22"/>
++                    <resource type="internal" val="0x80" res_name="port-23"/>
++                    <resource type="internal" val="0x00" res_name="port-sel-16-23-post"/>
++                 </function>
++            </device>
++
++            <device name="port-sel-24-31" slave="0x72">
++                <pre res_name="port-24-31"/>
++                <post res_name="port-group-sel-post"/>
++                <function type="mux" drv="MUX">
++                    <resource type="internal" val="0x01" res_name="port-24"/>
++                    <resource type="internal" val="0x02" res_name="port-25"/>
++                    <resource type="internal" val="0x04" res_name="port-26"/>
++                    <resource type="internal" val="0x08" res_name="port-27"/>
++                    <resource type="internal" val="0x10" res_name="port-28"/>
++                    <resource type="internal" val="0x20" res_name="port-29"/>
++                    <resource type="internal" val="0x40" res_name="port-30"/>
++                    <resource type="internal" val="0x80" res_name="port-31"/>
++                    <resource type="internal" val="0x00" res_name="port-sel-24-31-post"/>
++                 </function>
++            </device>
++
++            <device name="port-sel-32-39" slave="0x72">
++                <pre res_name="port-32-39"/>
++                <post res_name="port-group-sel-post"/>
++                <function type="mux" drv="MUX">
++                    <resource type="internal" val="0x01" res_name="port-32"/>
++                    <resource type="internal" val="0x02" res_name="port-33"/>
++                    <resource type="internal" val="0x04" res_name="port-34"/>
++                    <resource type="internal" val="0x08" res_name="port-35"/>
++                    <resource type="internal" val="0x10" res_name="port-36"/>
++                    <resource type="internal" val="0x20" res_name="port-37"/>
++                    <resource type="internal" val="0x40" res_name="port-38"/>
++                    <resource type="internal" val="0x80" res_name="port-39"/>
++                    <resource type="internal" val="0x00" res_name="port-sel-32-39-post"/>
++                 </function>
++            </device>
++
++            <device name="port-sel-40-47" slave="0x72">
++                <pre res_name="port-40-47"/>
++                <post res_name="port-group-sel-post"/>
++                <function type="mux" drv="MUX">
++                    <resource type="internal" val="0x01" res_name="port-40"/>
++                    <resource type="internal" val="0x02" res_name="port-41"/>
++                    <resource type="internal" val="0x04" res_name="port-42"/>
++                    <resource type="internal" val="0x08" res_name="port-43"/>
++                    <resource type="internal" val="0x10" res_name="port-44"/>
++                    <resource type="internal" val="0x20" res_name="port-45"/>
++                    <resource type="internal" val="0x40" res_name="port-46"/>
++                    <resource type="internal" val="0x80" res_name="port-47"/>
++                    <resource type="internal" val="0x00" res_name="port-sel-40-47-post"/>
++                 </function>
++            </device>
++
++            <device name="port-sel-0-7" slave="0x72">
++                <pre res_name="port-48-55"/>
++                <post res_name="port-group-sel-post"/>
++                <function type="mux" drv="MUX">
++                    <resource type="internal" val="0x01" res_name="port-48"/>
++                    <resource type="internal" val="0x02" res_name="port-49"/>
++                    <resource type="internal" val="0x04" res_name="port-50"/>
++                    <resource type="internal" val="0x08" res_name="port-51"/>
++                    <resource type="internal" val="0x10" res_name="port-52"/>
++                    <resource type="internal" val="0x20" res_name="port-53"/>
++                    <resource type="internal" val="0x40" res_name="port-54"/>
++                    <resource type="internal" val="0x80" res_name="port-55"/>
++                    <resource type="internal" val="0x00" res_name="port-sel-48-55-post"/>
++                 </function>
++            </device>
++
++            <device name="eeprom-port-0" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-0"/>
++                <post res_name="port-sel-0-7-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-0" alen="1">
++                        <reference res_name="port-0-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-1" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-1"/>
++                <post res_name="port-sel-0-7-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-1" alen="1">
++                        <reference res_name="port-1-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-2" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-2"/>
++                <post res_name="port-sel-0-7-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-2" alen="1">
++                        <reference res_name="port-2-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-3" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-3"/>
++                <post res_name="port-sel-0-7-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-3" alen="1">
++                        <reference res_name="port-3-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-4" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-4"/>
++                <post res_name="port-sel-0-7-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-4" alen="1">
++                        <reference res_name="port-4-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-5" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-5"/>
++                <post res_name="port-sel-0-7-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-5" alen="1">
++                        <reference res_name="port-5-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-6" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-6"/>
++                <post res_name="port-sel-0-7-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-6" alen="1">
++                        <reference res_name="port-6-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-7" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-7"/>
++                <post res_name="port-sel-0-7-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-7" alen="1">
++                        <reference res_name="port-7-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-8" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-8"/>
++                <post res_name="port-sel-8-15-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-8" alen="1">
++                        <reference res_name="port-8-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-9" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-9"/>
++                <post res_name="port-sel-8-15-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-9" alen="1">
++                        <reference res_name="port-9-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-10" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-10"/>
++                <post res_name="port-sel-8-15-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-10" alen="1">
++                        <reference res_name="port-10-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-11" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-11"/>
++                <post res_name="port-sel-8-15-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-11" alen="1">
++                        <reference res_name="port-11-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-12" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-12"/>
++                <post res_name="port-sel-8-15-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-12" alen="1">
++                        <reference res_name="port-12-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-13" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-13"/>
++                <post res_name="port-sel-8-15-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-13" alen="1">
++                        <reference res_name="port-13-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-14" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-14"/>
++                <post res_name="port-sel-8-15-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-14" alen="1">
++                        <reference res_name="port-14-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-15" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-15"/>
++                <post res_name="port-sel-8-15-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-15" alen="1">
++                        <reference res_name="port-15-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-16" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-16"/>
++                <post res_name="port-sel-16-23-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-16" alen="1">
++                        <reference res_name="port-16-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-17" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-17"/>
++                <post res_name="port-sel-16-23-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-17" alen="1">
++                        <reference res_name="port-17-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-18" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-18"/>
++                <post res_name="port-sel-16-23-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-18" alen="1">
++                        <reference res_name="port-18-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-19" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-19"/>
++                <post res_name="port-sel-16-23-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-19" alen="1">
++                        <reference res_name="port-19-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-20" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-20"/>
++                <post res_name="port-sel-16-23-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-20" alen="1">
++                        <reference res_name="port-20-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-21" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-21"/>
++                <post res_name="port-sel-16-23-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-21" alen="1">
++                        <reference res_name="port-21-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-22" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-22"/>
++                <post res_name="port-sel-16-23-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-22" alen="1">
++                        <reference res_name="port-22-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-23" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-23"/>
++                <post res_name="port-sel-16-23-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-23" alen="1">
++                        <reference res_name="port-23-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-24" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-24"/>
++                <post res_name="port-sel-24-31-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-24" alen="1">
++                        <reference res_name="port-24-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-25" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-25"/>
++                <post res_name="port-sel-24-31-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-25" alen="1">
++                        <reference res_name="port-25-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-26" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-26"/>
++                <post res_name="port-sel-24-31-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-26" alen="1">
++                        <reference res_name="port-26-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-27" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-27"/>
++                <post res_name="port-sel-24-31-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-27" alen="1">
++                        <reference res_name="port-27-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-28" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-28"/>
++                <post res_name="port-sel-24-31-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-28" alen="1">
++                        <reference res_name="port-28-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-29" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-29"/>
++                <post res_name="port-sel-24-31-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-29" alen="1">
++                        <reference res_name="port-29-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-30" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-30"/>
++                <post res_name="port-sel-24-31-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-30" alen="1">
++                        <reference res_name="port-30-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-31" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-31"/>
++                <post res_name="port-sel-24-31-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-31" alen="1">
++                        <reference res_name="port-31-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-32" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-32"/>
++                <post res_name="port-sel-32-39-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-32" alen="1">
++                        <reference res_name="port-32-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-33" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-33"/>
++                <post res_name="port-sel-32-39-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-33" alen="1">
++                        <reference res_name="port-33-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-34" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-34"/>
++                <post res_name="port-sel-32-39-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-34" alen="1">
++                        <reference res_name="port-34-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-35" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-35"/>
++                <post res_name="port-sel-32-39-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-35" alen="1">
++                        <reference res_name="port-35-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-36" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-36"/>
++                <post res_name="port-sel-32-39-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-36" alen="1">
++                        <reference res_name="port-36-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-37" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-37"/>
++                <post res_name="port-sel-32-39-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-37" alen="1">
++                        <reference res_name="port-37-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-38" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-38"/>
++                <post res_name="port-sel-32-39-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-38" alen="1">
++                        <reference res_name="port-38-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-39" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-39"/>
++                <post res_name="port-sel-32-39-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-39" alen="1">
++                        <reference res_name="port-39-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-40" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-40"/>
++                <post res_name="port-sel-40-47-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-40" alen="1">
++                        <reference res_name="port-40-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-41" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-41"/>
++                <post res_name="port-sel-40-47-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-41" alen="1">
++                        <reference res_name="port-41-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-42" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-42"/>
++                <post res_name="port-sel-40-47-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-42" alen="1">
++                        <reference res_name="port-42-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-43" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-43"/>
++                <post res_name="port-sel-40-47-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-43" alen="1">
++                        <reference res_name="port-43-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-44" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-44"/>
++                <post res_name="port-sel-40-47-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-44" alen="1">
++                        <reference res_name="port-44-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-45" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-45"/>
++                <post res_name="port-sel-40-47-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-45" alen="1">
++                        <reference res_name="port-45-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-46" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-46"/>
++                <post res_name="port-sel-40-47-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-46" alen="1">
++                        <reference res_name="port-46-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-47" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-47"/>
++                <post res_name="port-sel-40-47-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="SFF8472">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-47" alen="1">
++                        <reference res_name="port-47-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-48" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-48"/>
++                <post res_name="port-sel-48-55-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="QSFPPLUS">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-48" alen="1">
++                        <reference res_name="port-48-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-49" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-49"/>
++                <post res_name="port-sel-48-55-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="QSFPPLUS">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-49" alen="1">
++                        <reference res_name="port-49-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-50" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-50"/>
++                <post res_name="port-sel-48-55-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="QSFPPLUS">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-50" alen="1">
++                        <reference res_name="port-50-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-51" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-51"/>
++                <post res_name="port-sel-48-55-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="QSFPPLUS">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-51" alen="1">
++                        <reference res_name="port-51-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-52" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-52"/>
++                <post res_name="port-sel-48-55-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="QSFPPLUS">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-52" alen="1">
++                        <reference res_name="port-52-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-53" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-53"/>
++                <post res_name="port-sel-48-55-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="QSFPPLUS">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-53" alen="1">
++                        <reference res_name="port-53-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-54" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-54"/>
++                <post res_name="port-sel-48-55-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="QSFPPLUS">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-54" alen="1">
++                        <reference res_name="port-54-present"/>
++                    </resource>
++                </function>
++            </device>
++
++            <device name="eeprom-port-55" slave="0x50">
++                <pre res_name="i2c-bus-busy"/>
++                <pre res_name="port-55"/>
++                <post res_name="port-sel-48-55-post"/>
++                <post res_name="i2c-bus-free"/>
++                <function type="media" drv="QSFPPLUS">
++                    <resource type="sfp-eeprom" res_name="eeprom-port-55" alen="1">
++                        <reference res_name="port-55-present"/>
++                    </resource>
++                </function>
++            </device>
++   </I2C>
++
++    <IPMI bus="0">
++        <device name="bmc-0" slave="0x0">
++            <function type="bmc_stat" drv="BMC_STAT">
++                <resource type="present" unit="0" res_name="psu-present-0" dev_type="psu"/>
++                <resource type="present" unit="1" res_name="psu-present-1" dev_type="psu"/>
++                <resource type="present" unit="0" res_name="fan-present-0" dev_type="fan"/>
++                <resource type="present" unit="1" res_name="fan-present-1" dev_type="fan"/>
++                <resource type="present" unit="2" res_name="fan-present-2" dev_type="fan"/>
++                <resource type="present" unit="3" res_name="fan-present-3" dev_type="fan"/>
++                <resource type="present" unit="4" res_name="fan-present-4" dev_type="fan"/>
++                <resource type="present" unit="5" res_name="fan-present-5" dev_type="fan"/>
++                <resource type="present" unit="6" res_name="fan-present-6" dev_type="fan"/>
++                <resource type="present" unit="7" res_name="fan-present-7" dev_type="fan"/>
++            </function>
++            <function type="psu" drv="BMC_PSU">
++                <resource type="psu" unit="0" res_name="psu-0">
++                    <reference res_name="psu-present-0"/>
++                </resource>
++                <resource type="psu" unit="1" res_name="psu-1">
++                    <reference res_name="psu-present-1"/>
++                </resource>
++            </function>
++            <function type="fan" drv="BMC_FAN">
++                <resource type="fan" unit="0" res_name="fan-0" ctrl_type="RPM" fan_max_speed="23000" fan_def_speed="0">
++                    <reference res_name="fan-present-0"/>
++                </resource>
++                <resource type="fan" unit="1" res_name="fan-1" ctrl_type="RPM" fan_max_speed="20500" fan_def_speed="0">
++                    <reference res_name="fan-present-1"/>
++                </resource>
++                <resource type="fan" unit="2" res_name="fan-2" ctrl_type="RPM" fan_max_speed="23000" fan_def_speed="0">
++                    <reference res_name="fan-present-2"/>
++                </resource>
++                <resource type="fan" unit="3" res_name="fan-3" ctrl_type="RPM" fan_max_speed="20500" fan_def_speed="0">
++                    <reference res_name="fan-present-3"/>
++                </resource>
++                <resource type="fan" unit="4" res_name="fan-4" ctrl_type="RPM" fan_max_speed="23000" fan_def_speed="0">
++                    <reference res_name="fan-present-4"/>
++                </resource>
++                <resource type="fan" unit="5" res_name="fan-5" ctrl_type="RPM" fan_max_speed="20500" fan_def_speed="0">
++                    <reference res_name="fan-present-5"/>
++                </resource>
++                <resource type="fan" unit="6" res_name="fan-6" ctrl_type="RPM" fan_max_speed="23000" fan_def_speed="0">
++                    <reference res_name="fan-present-6"/>
++                </resource>
++                <resource type="fan" unit="7" res_name="fan-7" ctrl_type="RPM" fan_max_speed="20500" fan_def_speed="0">
++                    <reference res_name="fan-present-7"/>
++                </resource>
++            </function>
++            <function type="thermal" drv="BMC_TMP">
++                <resource type="thermal" unit="0" res_name="thermal-0" low_threshold="0" high_threshold="100"/>
++                <resource type="thermal" unit="1" res_name="thermal-1" low_threshold="0" high_threshold="100"/>
++                <resource type="thermal" unit="2" res_name="thermal-2" low_threshold="0" high_threshold="100"/>
++                <resource type="thermal" unit="3" res_name="thermal-3" low_threshold="0" high_threshold="100"/>
++            </function>
++        </device>
++    </IPMI>
++</root>
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/x86-64-stordis-bf2556x-1t-r0.yml b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/x86-64-stordis-bf2556x-1t-r0.yml
+new file mode 100755
+index 00000000..ac1b6ca6
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/x86-64-stordis-bf2556x-1t-r0.yml
+@@ -0,0 +1,32 @@
++---
++
++######################################################################
++#
++# platform-config for STORDIS BF2556X-1T
++######################################################################
++
++x86-64-stordis-bf2556x-1t-r0:
++
++  grub:
++
++    serial: >-
++      --port=0x3f8
++      --speed=115200
++      --word=8
++      --parity=no
++      --stop=1
++
++    kernel:
++    #   <<: *kernel-4-19
++      <<: *kernel-3-16
++
++    args: >-
++      nopat
++      console=ttyS0,115200n8
++
++  network:
++
++    interfaces:
++      ma1:
++        name: eth2
++
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/python/x86_64_stordis_bf2556x_1t_r0/__init__.py b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/python/x86_64_stordis_bf2556x_1t_r0/__init__.py
+new file mode 100755
+index 00000000..f741798d
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/python/x86_64_stordis_bf2556x_1t_r0/__init__.py
+@@ -0,0 +1,17 @@
++from onl.platform.base import *
++from onl.platform.stordis import *
++
++class OnlPlatform_x86_64_stordis_bf2556x_1t_r0(OnlPlatformStordis,
++                                         OnlPlatformPortConfig_48x25_8x100):
++    PLATFORM='x86-64-stordis-bf2556x-1t-r0'
++    MODEL="BF2556X-1T"
++    SYS_OBJECT_ID=".25560.1"
++    
++    def baseconfig(self):
++		# Insert specific module
++        self.insmod('irq_debug')
++
++		# Or, insert all platform modules:
++		#	self.insmod_platform()
++        return True
++
+diff --git a/packages/platforms/stordis/x86-64/modules/Makefile b/packages/platforms/stordis/x86-64/modules/Makefile
+new file mode 100755
+index 00000000..003238cf
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/modules/Makefile
+@@ -0,0 +1 @@
++include $(ONL)/make/pkg.mk
+\ No newline at end of file
+diff --git a/packages/platforms/stordis/x86-64/modules/PKG.yml b/packages/platforms/stordis/x86-64/modules/PKG.yml
+new file mode 100755
+index 00000000..10a08488
+--- /dev/null
++++ b/packages/platforms/stordis/x86-64/modules/PKG.yml
+@@ -0,0 +1 @@
++!include $ONL_TEMPLATES/no-arch-vendor-modules.yml ARCH=amd64 VENDOR=stordis

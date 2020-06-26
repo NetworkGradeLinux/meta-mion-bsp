@@ -1,0 +1,35 @@
+From 737b6cdf9588f4f734af7113431ff0b2172a5471 Mon Sep 17 00:00:00 2001
+From: OpenEmbedded <oe.patch@oe>
+Date: Thu, 25 Jun 2020 23:37:50 +0000
+
+---
+ .../kernels/3.16-lts/patches/driver-igb-version-5.3.54.patch    | 2 +-
+ .../x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/packages/base/any/kernels/3.16-lts/patches/driver-igb-version-5.3.54.patch b/packages/base/any/kernels/3.16-lts/patches/driver-igb-version-5.3.54.patch
+index a3134c43..603cc6c5 100644
+--- a/packages/base/any/kernels/3.16-lts/patches/driver-igb-version-5.3.54.patch
++++ b/packages/base/any/kernels/3.16-lts/patches/driver-igb-version-5.3.54.patch
+@@ -43286,7 +43286,7 @@ diff -Nu a/drivers/net/ethernet/intel/igb/kcompat.h b/drivers/net/ethernet/intel
+ +#endif
+ +
+ +#ifndef AX_RELEASE_CODE
+-+#define AX_RELEASE_CODE 0
+++#define AX_RELEASE_CODE AX_RELEASE_VERSION(3,0)
+ +#endif
+ +
+ +#if (AX_RELEASE_CODE && AX_RELEASE_CODE == AX_RELEASE_VERSION(3,0))
+diff --git a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml
+index 796f8f3e..70caac01 100755
+--- a/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml
++++ b/packages/platforms/stordis/x86-64/bf2556x-1t/platform-config/r0/src/lib/platform.xml
+@@ -62,7 +62,7 @@
+         <port instance="56" type="sfp"/>
+     </port_config>
+ 
+-    <I2C bus="0">
++    <I2C bus="2">
+             <device name="baseboard-eeprom" slave="0x56">
+                 <function type="eeprom" drv="EEPROM">
+                     <resource type="onie-eeprom" res_name="baseboard-eeprom" offset="0x800" dlen="256" alen="2">
