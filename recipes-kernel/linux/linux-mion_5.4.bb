@@ -18,6 +18,7 @@ KERNEL_CONFIG_URI ?= "git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;n
 SRC_URI = " \
            git://github.com/intel/linux-intel-lts.git;protocol=https;name=machine;branch=${KBRANCH}; \
            ${KERNEL_CONFIG_URI} \
+           file://veth.cfg \
           "
 
 SRCREV_machine ?= "89e6c056f3076641486519375f7bf280bf833223"
