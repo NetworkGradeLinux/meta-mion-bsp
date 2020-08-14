@@ -1,6 +1,6 @@
 require recipes-kernel/linux/linux-yocto.inc
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/linux-yocto:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 LINUX_VERSION ?= "5.4.50"
 
@@ -19,6 +19,7 @@ SRC_URI = " \
            git://github.com/intel/linux-intel-lts.git;protocol=https;name=machine;branch=${KBRANCH}; \
            ${KERNEL_CONFIG_URI} \
            file://veth.cfg \
+           file://crypto.cfg \
           "
 
 SRCREV_machine ?= "89e6c056f3076641486519375f7bf280bf833223"
