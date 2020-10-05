@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT 
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 ONIE_VENDOR = "stordis"
 ONIE_VENDOR_SHORT = "stordis"

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT 
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 KMACHINE_stordis-bf2556x-1t = "common-pc-64"
 KBRANCH_stordis-bf2556x-1t  = "v5.4/standard/base"
