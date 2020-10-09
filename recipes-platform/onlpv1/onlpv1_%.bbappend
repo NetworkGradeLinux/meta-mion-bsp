@@ -79,13 +79,18 @@ do_install() {
 
   # platform file
   install -d ${D}${sysconfdir}/onl
-  echo "${ONL_PLATFORM}-r${ONIE_MACHINE_REV}" > ${D}${sysconfdir}/onl/platform
+  echo "${ONIE_ARCH}-${ONIE_VENDOR}-${ONIE_MACHINE}-r${ONIE_MACHINE_REV}" > ${D}${sysconfdir}/onl/platform
 
   # service file
   install -d ${D}${systemd_unitdir}/system
   install -m 0644 ${WORKDIR}/onlpdump.service ${D}${systemd_unitdir}/system
   sed -i -e 's,@BINDIR@,${bindir},g' \
          ${D}${systemd_unitdir}/system/*.service
+
+  # install platform.xml file
+  install -d ${D}/lib/platform-config/current/onl/
+  install -m 0664 packages/platforms/${ONIE_VENDOR}/${ONL_ARCH}/${ONIE_MACHINE}/platform-config/r0/src/lib/platform.xml ${D}/lib/platform-config/current/onl/platform.xml
 }
 
+FILES_${PN} += "/lib/platform-config/*"
 
