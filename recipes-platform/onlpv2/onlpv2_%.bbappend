@@ -6,8 +6,8 @@ ONIE_VENDOR_SHORT = "stordis"
 ONL_VENDOR = "stordis"
 ONIE_ARCH = "x86-64"
 ONIE_MACHINE = "bf2556x-1t"
-ONL_BRANCH = "ONLPv2"
-URI_ONL = "git://git@github.com/APS-Networks/OpenNetworkLinux.git;protocol=ssh;branch=${ONL_BRANCH}"
+ONL_BRANCH = "main"
+URI_ONL = "git://git@github.com/APS-Networks/OpenNetworkLinuxv2.git;protocol=ssh;branch=${ONL_BRANCH}"
 MODULE="x86_64_stordis_bf2556x_1t"
 EXTRA_OEMAKE+="\
     'ARCH=amd64'\

@@ -10,7 +10,7 @@ ONIE_VENDOR_SHORT = "stordis"
 ONL_VENDOR = "stordis"
 ONIE_ARCH = "x86-64"
 ONIE_MACHINE = "bf2556x-1t"
-ONL_BRANCH = "master"
+ONL_BRANCH = "main"
 URI_ONL = "git://git@github.com/APS-Networks/OpenNetworkLinux.git;protocol=ssh;branch=${ONL_BRANCH}"
 SRC_URI += " \
     file://0001-i2c-bigcode-use-libi2c-for-onlpdump-and-update-headers.patch;patchdir=${SUBMODULE_BIGCODE} \
