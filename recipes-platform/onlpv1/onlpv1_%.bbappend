@@ -21,3 +21,9 @@ MODULE="x86_64_stordis_bf2556x_1t"
 EXTRA_OEMAKE+="\
     'ARCH=amd64'\
 "
+
+do_install_append() {
+  # install platform.xml file
+  install -d ${D}/lib/platform-config/current/onl/
+  install -m 0664 packages/platforms/${ONIE_VENDOR}/${ONL_ARCH}/${ONIE_MACHINE}/platform-config/r0/src/lib/platform.xml ${D}/lib/platform-config/current/onl/platform.xml
+}
