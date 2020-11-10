@@ -9,6 +9,7 @@ ONIE_MACHINE_REV ?= "0"
 ONIE_PLATFORM ?= "${ONIE_ARCH}-${ONIE_MACHINE}-r${ONIE_MACHINE_REV}"
 ONL_VENDOR = "${ONIE_VENDOR}"
 ONL_ARCH = "${@d.getVar('TARGET_ARCH').replace('_','-')}"
+ONL_MACHINE = "${ONIE_MACHINE}"
 
 # onl vars
 ONL_DEBIAN_SUITE = "mion"
