@@ -12,4 +12,9 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
+do_install() {
+    install -d ${D}/lib/modules/${KERNEL_VERSION}/onl
+    install -m 0644 x86-64-accton-asgvolt64-sys.ko ${D}/lib/modules/${KERNEL_VERSION}/onl
+}
+
 #KERNEL_MODULE_AUTOLOAD += " x86-64-accton-asgvolt64-sys"
