@@ -1,0 +1,30 @@
+From 10de86bf52144b4cde1298e633859a5e4beeec31 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eil=C3=ADs=20N=C3=AD=20Fhlannag=C3=A1in?=
+ <pidge@toganlabs.com>
+Date: Wed, 15 Jul 2020 14:09:45 +0000
+Subject: [PATCH] i2c: infra use libi2c for onlpdump and update headers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Eilís Ní Fhlannagáin <pidge@toganlabs.com>
+---
+ targets/utests/AIM/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/targets/utests/AIM/Makefile b/targets/utests/AIM/Makefile
+index 0ad6977..bd3aac6 100644
+--- a/targets/utests/AIM/Makefile
++++ b/targets/utests/AIM/Makefile
+@@ -24,7 +24,7 @@ TEST_MODULE :=  AIM
+ GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_POSIX=1
+ GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MAIN=1
+ 
+-GLOBAL_LINK_LIBS += -lpthread -lrt
++GLOBAL_LINK_LIBS += -lpthread -lrt -li2c
+ PEDANTIC := 1
+ 
+ include $(BUILDER)/build-unit-test.mk
+-- 
+2.17.1
+
