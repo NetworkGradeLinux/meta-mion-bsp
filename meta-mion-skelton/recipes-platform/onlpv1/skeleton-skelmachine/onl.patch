@@ -1,0 +1,76 @@
+From 9560bbd9a5a108e814170ca4c1c4e2366da897be Mon Sep 17 00:00:00 2001
+From: OpenEmbedded <oe.patch@oe>
+Date: Thu, 25 Jun 2020 23:37:51 +0000
+
+---
+ .../installer/installed/builds/boot-config    |  1 +
+ .../jessie/common/all-base-packages.yml       | 36 +++++++++++++++++++
+ tools/onlrfs.py                               |  2 +-
+ 3 files changed, 38 insertions(+), 1 deletion(-)
+
+diff --git a/builds/amd64/installer/installed/builds/boot-config b/builds/amd64/installer/installed/builds/boot-config
+index 76125102..0b0debf1 100644
+--- a/builds/amd64/installer/installed/builds/boot-config
++++ b/builds/amd64/installer/installed/builds/boot-config
+@@ -1,3 +1,4 @@
+ NETDEV=ma1
+ BOOTMODE=INSTALLED
++NETAUTO=dhcp
+ SWI=images::latest
+diff --git a/builds/any/rootfs/jessie/common/all-base-packages.yml b/builds/any/rootfs/jessie/common/all-base-packages.yml
+index bbeab6b4..ff0d166a 100644
+--- a/builds/any/rootfs/jessie/common/all-base-packages.yml
++++ b/builds/any/rootfs/jessie/common/all-base-packages.yml
+@@ -81,3 +81,39 @@
+ - sysstat
+ - ipmitool
+ - lm-sensors
++- autoconf
++- libtool
++- libc6-dev
++- g++
++- git
++- libboost-dev
++- python-dev
++- flex
++- bison
++- libevent-dev
++- libboost-test-dev
++- libboost-thread-dev
++- libboost-system-dev
++- bridge-utils
++- python-pip
++- python-ply
++- ethtool
++- libssl-dev
++- libpcap-dev
++- libusb-1.0-0-dev
++- libcurl4-gnutls-dev
++- automake
++- python-crcmod
++- python-jsonschema
++- xz-utils
++- libbz2-dev
++- ca-certificates
++- ca-certificates-java
++- apt-transport-https
++- default-jdk
++- default-jre
++- default-jre-headless
++- unzip
++- zip
++- zlib1g-dev
++- libjudy-dev
+diff --git a/tools/onlrfs.py b/tools/onlrfs.py
+index 42172e8b..4d0a43be 100755
+--- a/tools/onlrfs.py
++++ b/tools/onlrfs.py
+@@ -301,7 +301,7 @@ class OnlRfsContext(object):
+ class OnlRfsBuilder(object):
+ 
+     DEFAULTS = dict(
+-        DEBIAN_SUITE='wheezy',
++        DEBIAN_SUITE='jessie',
+         DEBIAN_MIRROR='mirrors.kernel.org/debian/',
+         APT_CACHE='127.0.0.1:3142/'
+         )
