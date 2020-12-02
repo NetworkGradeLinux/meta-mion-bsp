@@ -17,6 +17,8 @@ ONL_BRANCH_bf6064x = "main"
 URI_ONL_bf2556x = "git://git@github.com/APS-Networks/OpenNetworkLinux.git;protocol=ssh;branch=${ONL_BRANCH}"
 URI_ONL_bf6064x = "git://git@github.com/APS-Networks/OpenNetworkLinux.git;protocol=ssh;branch=${ONL_BRANCH}"
 
+TARGET_CFLAGS_bf6064x += "-Wno-error -Wno-error=restrict -Wno-error=format-overflow -Wno-error=cpp"
+
 SRC_URI_append = " \
     file://0001-i2c-bigcode-use-libi2c-for-onlpdump-and-update-headers.patch;patchdir=${SUBMODULE_BIGCODE} \
     file://0001-i2c-infra-use-libi2c-for-onlpdump-and-update-headers.patch;patchdir=${SUBMODULE_INFRA} \
