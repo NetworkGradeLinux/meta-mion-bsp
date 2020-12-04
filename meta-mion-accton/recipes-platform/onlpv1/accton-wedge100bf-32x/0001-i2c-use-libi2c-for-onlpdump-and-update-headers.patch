@@ -1,0 +1,32 @@
+From ad24649c0e13ca72afc8b25a39d6a5a4a389869b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eil=C3=ADs=20N=C3=AD=20Fhlannag=C3=A1in?=
+ <pidge@toganlabs.com>
+Date: Wed, 15 Jul 2020 14:39:33 +0000
+Subject: [PATCH] i2c: use libi2c for onlpdump and update headers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Eilís Ní Fhlannagáin <pidge@toganlabs.com>
+---
+ packages/base/any/onlp/src/onlplib/module/inc/onlplib/i2c.h    | 3 ++-
+ 6 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/packages/base/any/onlp/src/onlplib/module/inc/onlplib/i2c.h b/packages/base/any/onlp/src/onlplib/module/inc/onlplib/i2c.h
+index 8af45370..45d9cf5b 100644
+--- a/packages/base/any/onlp/src/onlplib/module/inc/onlplib/i2c.h
++++ b/packages/base/any/onlp/src/onlplib/module/inc/onlplib/i2c.h
+@@ -352,7 +352,8 @@ extern onlp_i2c_mux_driver_t onlp_i2c_mux_driver_pca9548;
+ 
+ 
+ #if ONLPLIB_CONFIG_I2C_USE_CUSTOM_HEADER == 1
+-#include <linux/i2c-devices.h>
++#include <i2c/smbus.h> 
++#include <linux/i2c-dev.h> 
+ #else
+ #include <linux/i2c-dev.h>
+ #endif
+ 
+-- 
+2.17.1
+
