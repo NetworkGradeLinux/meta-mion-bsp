@@ -1,0 +1,27 @@
+From a982850e4602a585ad2634032fa8f598b6999e50 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eil=C3=ADs=20N=C3=AD=20Fhlannag=C3=A1in?=
+ <pidge@toganlabs.com>
+Date: Tue, 17 Nov 2020 10:30:18 +0000
+Subject: [PATCH] Makefile: Add FILTER from src to machine name
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Killing the alltargets bug
+
+Signed-off-by: Eilís Ní Fhlannagáin <pidge@toganlabs.com>
+---
+ .../platforms/stordis/x86-64/bf6064x-t/onlp/builds/Makefile     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/platforms/stordis/x86-64/bf6064x-t/onlp/builds/Makefile b/packages/platforms/stordis/x86-64/bf6064x-t/onlp/builds/Makefile
+index e7437cb2..a6d6da88 100755
+--- a/packages/platforms/stordis/x86-64/bf6064x-t/onlp/builds/Makefile
++++ b/packages/platforms/stordis/x86-64/bf6064x-t/onlp/builds/Makefile
+@@ -1,2 +1,2 @@
+-FILTER=src
++FILTER=x86_64_stordis_bf6064x_t
+ include $(ONL)/make/subdirs.mk
+-- 
+2.29.2
+
