@@ -1,0 +1,103 @@
+From 8e4460281f0f744611f71160a1b769dbec49445a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eil=C3=ADs=20N=C3=AD=20Fhlannag=C3=A1in?=
+ <pidge@toganlabs.com>
+Date: Wed, 15 Jul 2020 14:08:07 +0000
+Subject: [PATCH] i2c modules: use libi2c for onlpdump and update headers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Eilís Ní Fhlannagáin <pidge@toganlabs.com>
+---
+ modules/OS/module/src/make.mk               | 2 +-
+ modules/orc/module/src/drivers/veth/make.mk | 4 ++--
+ modules/sff/utest/Makefile                  | 2 +-
+ targets/utests/OS/posix/Makefile            | 2 +-
+ targets/vpi/libvpi/Makefile                 | 4 ++--
+ targets/vpi/vpitool/Makefile                | 2 +-
+ 6 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/modules/OS/module/src/make.mk b/modules/OS/module/src/make.mk
+index eb50f88..82fb1cb 100644
+--- a/modules/OS/module/src/make.mk
++++ b/modules/OS/module/src/make.mk
+@@ -29,7 +29,7 @@ ifeq ($(OS_MAKE_CONFIG_AUTOSELECT),1)
+  uname := $(shell uname -s)
+  ifeq ($(uname),Linux)
+   OS_CFLAGS += -DOS_CONFIG_INCLUDE_POSIX=1
+-  GLOBAL_LINK_LIBS += -lrt -lpthread
++  GLOBAL_LINK_LIBS += -lrt -li2c -lpthread
+  endif
+  ifeq ($(uname),Darwin)
+   OS_CFLAGS += -DOS_CONFIG_INCLUDE_OSX=1
+diff --git a/modules/orc/module/src/drivers/veth/make.mk b/modules/orc/module/src/drivers/veth/make.mk
+index 9e85113..c7da0fa 100644
+--- a/modules/orc/module/src/drivers/veth/make.mk
++++ b/modules/orc/module/src/drivers/veth/make.mk
+@@ -36,7 +36,7 @@ include $(BUILDER)/lib.mk
+ #
+ # include $(BUILDER)/targets.mk
+ #
+-# #LDFLAGS += -lpthread -lrt
++# #LDFLAGS += -lpthread -lrt -li2c
+ 
+ # GLOBAL_CFLAGS += -fPIC
+-#GLOBAL_LINK_LIBS += -lpcap -lrt
++#GLOBAL_LINK_LIBS += -lpcap -lrt -li2c
+diff --git a/modules/sff/utest/Makefile b/modules/sff/utest/Makefile
+index aa5a1d4..78c2605 100644
+--- a/modules/sff/utest/Makefile
++++ b/modules/sff/utest/Makefile
+@@ -11,5 +11,5 @@ GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MODULES_INIT=1
+ GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MAIN=1
+ GLOBAL_CFLAGS += -DSFF_CONFIG_INCLUDE_EXT_CC_CHECK=1
+ GLOBAL_CFLAGS += -DSFF_CONFIG_INCLUDE_DATABASE=1
+-GLOBAL_LINK_LIBS += -lrt -lpthread -lm
++GLOBAL_LINK_LIBS += -lrt -li2c -lpthread -lm
+ include $(BUILDER)/build-unit-test.mk
+diff --git a/targets/utests/OS/posix/Makefile b/targets/utests/OS/posix/Makefile
+index ff4a813..778a1bc 100644
+--- a/targets/utests/OS/posix/Makefile
++++ b/targets/utests/OS/posix/Makefile
+@@ -22,6 +22,6 @@ MODULE := OS_utest
+ TEST_MODULE :=  OS
+ DEPENDMODULES := AIM
+ GLOBAL_CFLAGS += -DOS_CONFIG_INCLUDE_POSIX=1
+-GLOBAL_LINK_LIBS := -lpthread -lrt
++GLOBAL_LINK_LIBS := -lpthread -lrt -li2c
+ 
+ include $(BUILDER)/build-unit-test.mk
+diff --git a/targets/vpi/libvpi/Makefile b/targets/vpi/libvpi/Makefile
+index 1524ede..0b74389 100644
+--- a/targets/vpi/libvpi/Makefile
++++ b/targets/vpi/libvpi/Makefile
+@@ -37,11 +37,11 @@ include $(BUILDER)/so.mk
+ 
+ include $(BUILDER)/targets.mk
+ 
+-LDFLAGS += -lpthread -lrt
++LDFLAGS += -lpthread -lrt -li2c
+ 
+ # TODO use pkg-config
+ GLOBAL_CFLAGS += -fPIC
+-GLOBAL_LINK_LIBS += -lpcap -lrt
++GLOBAL_LINK_LIBS += -lpcap -lrt -li2c
+ 
+ .DEFAULT_GOAL := all
+ 
+diff --git a/targets/vpi/vpitool/Makefile b/targets/vpi/vpitool/Makefile
+index 96b31be..bc4acd1 100644
+--- a/targets/vpi/vpitool/Makefile
++++ b/targets/vpi/vpitool/Makefile
+@@ -52,7 +52,7 @@ GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MAIN=1
+ GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MODULES_INIT=1
+ GLOBAL_CFLAGS += -DOS_CONFIG_INCLUDE_POSIX=1
+ 
+-GLOBAL_LINK_LIBS += -lrt
++GLOBAL_LINK_LIBS += -lrt -li2c
+ 
+ ucli:
+ 	../../tools/uclihandlers.py main.c
+-- 
+2.17.1
+

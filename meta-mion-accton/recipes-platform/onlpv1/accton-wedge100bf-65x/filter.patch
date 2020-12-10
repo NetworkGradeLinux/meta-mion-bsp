@@ -1,0 +1,8 @@
+diff --git a/packages/platforms/accton/x86-64/wedge100bf-65x/onlp/builds/Makefile b/packages/platforms/accton/x86-64/wedge100bf-65x/onlp/builds/Makefile
+index e7437cb2..78ef4fd8 100755
+--- a/packages/platforms/accton/x86-64/wedge100bf-65x/onlp/builds/Makefile
++++ b/packages/platforms/accton/x86-64/wedge100bf-65x/onlp/builds/Makefile
+@@ -1,2 +1,2 @@
+-FILTER=src
++FILTER=x86_64_accton_wedge100bf_65x
+ include $(ONL)/make/subdirs.mk
