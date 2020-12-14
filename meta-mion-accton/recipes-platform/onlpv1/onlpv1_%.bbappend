@@ -44,6 +44,7 @@ SRC_URI_append_wedge100bf-65x = " \
     file://0001-i2c-bigcode-use-libi2c-for-onlpdump-and-update-headers.patch;patchdir=${SUBMODULE_BIGCODE} \
     file://0001-i2c-infra-use-libi2c-for-onlpdump-and-update-headers.patch;patchdir=${SUBMODULE_INFRA} \
     file://0001-i2c-use-libi2c-for-onlpdump-and-update-headers.patch \
+    file://0001-wedge100bf-65x-init.py-needs-to-wait-for-i2c.patch \
 "
 
 MODULE_asgvolt64 = "x86_64_accton_asgvolt64"
