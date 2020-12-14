@@ -1,0 +1,8 @@
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/Makefile
+index e7437cb2..78ef4fd8 100755
+--- a/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/Makefile
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/Makefile
+@@ -1,2 +1,2 @@
+-FILTER=src
++FILTER=x86_64_qemu_qemux86_64
+ include $(ONL)/make/subdirs.mk

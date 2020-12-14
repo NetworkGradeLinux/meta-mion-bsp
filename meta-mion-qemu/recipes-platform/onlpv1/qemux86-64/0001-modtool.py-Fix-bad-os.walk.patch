@@ -1,0 +1,34 @@
+From bbadea8792bd485d02bf93f9807419a2672a534b Mon Sep 17 00:00:00 2001
+From: Katrina Prosise <igorina@toganlabs.com>
+Date: Fri, 19 Feb 2021 11:24:59 -0500
+Subject: [PATCH] modtool.py: Fix bad os.walk
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+modtool os.walks looking for .module directories right .pc directory.
+This does NOT.GOOD.THINGS., so exclude .pc directory
+
+Signed-off-by: katrina prosise <igorina@toganlabs.com>
+Signed-off-by: Eilís Ní Fhlannagáin <pidge@toganlabs.com>
+---
+ builder/unix/tools/modtool.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/builder/unix/tools/modtool.py b/builder/unix/tools/modtool.py
+index b6f0f91..676c654 100755
+--- a/builder/unix/tools/modtool.py
++++ b/builder/unix/tools/modtool.py
+@@ -37,7 +37,9 @@ class ModuleTool(object):
+     def load_modules(self, target):
+         target = os.path.abspath(target)
+         if os.path.isdir(target):
++            exclude = set(['.pc'])
+             for (root, dirs, files) in os.walk(target):
++                dirs[:] = [d for d in dirs if d  not in exclude]
+                 for f in files:
+                     if f == ".module":
+                         self.__load_module(os.path.join(root, f))
+-- 
+2.25.1
+

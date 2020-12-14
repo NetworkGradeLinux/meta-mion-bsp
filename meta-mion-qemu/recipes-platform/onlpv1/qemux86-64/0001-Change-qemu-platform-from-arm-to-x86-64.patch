@@ -1,0 +1,1141 @@
+From 144efb81e9af3f0f7948b5d867ad5840cc5f1487 Mon Sep 17 00:00:00 2001
+From: Katrina Prosise <igorina@toganlabs.com>
+Date: Wed, 17 Feb 2021 10:37:20 -0500
+Subject: [PATCH] Change qemu platform from arm to x86-64
+
+qemux86-64 is known to work and has better support at multiple levels than
+qemu-armv7a, and will be easier to build and work with for the purpose
+of QA and demonstrations.
+
+Signed-off-by: Katrina Prosise <igorina@toganlabs.com>
+---
+ .../qemu/arm/arm-qemu-armv7a/modules/PKG.yml  |   1 -
+ .../qemu/arm/arm-qemu-armv7a/onlp/PKG.yml     |   1 -
+ .../onlp/builds/arm_qemu_armv7a/.gitignore    |   2 -
+ .../onlp/builds/arm_qemu_armv7a/.module       |   1 -
+ .../module/src/arm_qemu_armv7a_config.c       | 101 ------------------
+ .../platform-config/r0/PKG.yml                |   1 -
+ .../r0/src/lib/arm-qemu-armv7a-r0.yml         |  26 -----
+ .../src/python/arm_qemu_armv7a_r0/__init__.py |   9 --
+ packages/platforms/qemu/arm/modules/PKG.yml   |   1 -
+ .../platforms/qemu/{arm => x86-64}/Makefile   |   0
+ .../modules}/Makefile                         |   0
+ .../platforms/qemu/x86-64/modules/PKG.yml     |   1 +
+ .../qemux86-64}/.gitignore                    |   0
+ .../modules => x86-64/qemux86-64}/Makefile    |   0
+ .../qemux86-64/modules}/Makefile              |   0
+ .../qemu/x86-64/qemux86-64/modules/PKG.yml    |   1 +
+ .../qemux86-64/onlp}/Makefile                 |   0
+ .../qemu/x86-64/qemux86-64/onlp/PKG.yml       |   1 +
+ .../qemux86-64}/onlp/builds/Makefile          |   0
+ .../qemux86-64}/onlp/builds/lib/Makefile      |   2 +-
+ .../builds/lib/x86_64_qemu_qemux86-64.mk}     |   4 +-
+ .../qemux86-64}/onlp/builds/onlpdump/Makefile |   2 +-
+ .../builds/x86_64_qemu_qemux86_64/.gitignore  |   2 +
+ .../builds/x86_64_qemu_qemux86_64/.module     |   1 +
+ .../builds/x86_64_qemu_qemux86_64}/Makefile   |   4 +-
+ .../module/auto/make.mk                       |   6 +-
+ .../module/auto/x86_64_qemu_qemux86-64.yml}   |   4 +-
+ .../x86_64_qemu_qemux86_64.x}                 |   2 +-
+ .../x86_64_qemu_qemux86_64_config.h}          |  20 ++--
+ .../x86_64_qemu_qemux86_64_dox.h}             |  10 +-
+ .../x86_64_qemu_qemux86_64_porting.h}         |   4 +-
+ .../x86_64_qemu_qemux86_64}/module/make.mk    |   6 +-
+ .../module/src/Makefile                       |   2 +-
+ .../x86_64_qemu_qemux86_64}/module/src/fani.c |   2 +-
+ .../x86_64_qemu_qemux86_64}/module/src/ledi.c |   2 +-
+ .../module/src/make.mk                        |   2 +-
+ .../x86_64_qemu_qemux86_64}/module/src/psui.c |   2 +-
+ .../x86_64_qemu_qemux86_64}/module/src/sfpi.c |   4 +-
+ .../x86_64_qemu_qemux86_64}/module/src/sysi.c |   4 +-
+ .../module/src/thermali.c                     |   2 +-
+ .../src/x86_64_qemu_qemux86_64_config.c       | 101 ++++++++++++++++++
+ .../src/x86_64_qemu_qemux86_64_enums.c}       |   2 +-
+ .../module/src/x86_64_qemu_qemux86_64_int.h}  |   2 +-
+ .../module/src/x86_64_qemu_qemux86_64_log.c}  |   6 +-
+ .../module/src/x86_64_qemu_qemux86_64_log.h}  |   2 +-
+ .../src/x86_64_qemu_qemux86_64_module.c}      |   8 +-
+ .../module/src/x86_64_qemu_qemux86_64_ucli.c} |  26 ++---
+ .../x86_64_qemu_qemux86_64.doxy}              |   2 +-
+ .../qemux86-64/platform-config}/Makefile      |   0
+ .../qemux86-64/platform-config/r0}/Makefile   |   0
+ .../qemux86-64/platform-config/r0/PKG.yml     |   1 +
+ .../r0/src/lib/x86-64-qemu-qemux86-64-r0.yml  |  25 +++++
+ .../x86_64_qemu_qemux86_64_r0/__init__.py     |   9 ++
+ 53 files changed, 208 insertions(+), 209 deletions(-)
+ delete mode 100644 packages/platforms/qemu/arm/arm-qemu-armv7a/modules/PKG.yml
+ delete mode 100644 packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/PKG.yml
+ delete mode 100644 packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/.gitignore
+ delete mode 100644 packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/.module
+ delete mode 100644 packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_config.c
+ delete mode 100644 packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/PKG.yml
+ delete mode 100644 packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/src/lib/arm-qemu-armv7a-r0.yml
+ delete mode 100644 packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/src/python/arm_qemu_armv7a_r0/__init__.py
+ delete mode 100644 packages/platforms/qemu/arm/modules/PKG.yml
+ rename packages/platforms/qemu/{arm => x86-64}/Makefile (100%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a => x86-64/modules}/Makefile (100%)
+ create mode 100644 packages/platforms/qemu/x86-64/modules/PKG.yml
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a => x86-64/qemux86-64}/.gitignore (100%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/modules => x86-64/qemux86-64}/Makefile (100%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp => x86-64/qemux86-64/modules}/Makefile (100%)
+ create mode 100644 packages/platforms/qemu/x86-64/qemux86-64/modules/PKG.yml
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/platform-config => x86-64/qemux86-64/onlp}/Makefile (100%)
+ create mode 100644 packages/platforms/qemu/x86-64/qemux86-64/onlp/PKG.yml
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a => x86-64/qemux86-64}/onlp/builds/Makefile (100%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a => x86-64/qemux86-64}/onlp/builds/lib/Makefile (67%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/lib/arm_qemu_armv7a.mk => x86-64/qemux86-64/onlp/builds/lib/x86_64_qemu_qemux86-64.mk} (59%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a => x86-64/qemux86-64}/onlp/builds/onlpdump/Makefile (64%)
+ create mode 100644 packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/.gitignore
+ create mode 100644 packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/.module
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/Makefile (92%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/auto/make.mk (81%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/auto/arm_qemu_armv7a.yml => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/auto/x86_64_qemu_qemux86-64.yml} (95%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a.x => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.x} (93%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_config.h => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h} (85%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_dox.h => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_dox.h} (78%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_porting.h => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_porting.h} (97%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/make.mk (80%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/src/Makefile (92%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/src/fani.c (96%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/src/ledi.c (95%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/src/make.mk (96%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/src/psui.c (95%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/src/sfpi.c (93%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/src/sysi.c (95%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64}/module/src/thermali.c (96%)
+ create mode 100644 packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_config.c
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_enums.c => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_enums.c} (93%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_int.h => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_int.h} (93%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_log.c => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_log.c} (88%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_log.h => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_log.h} (95%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_module.c => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_module.c} (84%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_ucli.c => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_ucli.c} (67%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/arm_qemu_armv7a.doxy => x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.doxy} (99%)
+ rename packages/platforms/qemu/{arm/arm-qemu-armv7a/platform-config/r0 => x86-64/qemux86-64/platform-config}/Makefile (100%)
+ rename packages/platforms/qemu/{arm/modules => x86-64/qemux86-64/platform-config/r0}/Makefile (100%)
+ create mode 100644 packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/PKG.yml
+ create mode 100644 packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/src/lib/x86-64-qemu-qemux86-64-r0.yml
+ create mode 100644 packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/src/python/x86_64_qemu_qemux86_64_r0/__init__.py
+
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/modules/PKG.yml b/packages/platforms/qemu/arm/arm-qemu-armv7a/modules/PKG.yml
+deleted file mode 100644
+index 02169b9a..00000000
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/modules/PKG.yml
++++ /dev/null
+@@ -1 +0,0 @@
+-!include $ONL_TEMPLATES/no-platform-modules.yml ARCH=armel VENDOR=qemu BASENAME=arm-qemu-armv7a
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/PKG.yml b/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/PKG.yml
+deleted file mode 100644
+index 5f03853d..00000000
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/PKG.yml
++++ /dev/null
+@@ -1 +0,0 @@
+-!include $ONL_TEMPLATES/onlp-platform-any.yml PLATFORM=arm-qemu-armv7a ARCH=armel TOOLCHAIN=arm-linux-gnueabi
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/.gitignore b/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/.gitignore
+deleted file mode 100644
+index 8951b7ca..00000000
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/.gitignore
++++ /dev/null
+@@ -1,2 +0,0 @@
+-/arm_qemu_armv7a.mk
+-/doc
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/.module b/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/.module
+deleted file mode 100644
+index 731284a9..00000000
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/.module
++++ /dev/null
+@@ -1 +0,0 @@
+-name: arm_qemu_armv7a
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_config.c b/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_config.c
+deleted file mode 100644
+index 72ffb7d4..00000000
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_config.c
++++ /dev/null
+@@ -1,101 +0,0 @@
+-/************************************************************
+- * <bsn.cl fy=2014 v=onl>
+- *
+- *        Copyright 2014, 2015 Big Switch Networks, Inc.
+- *
+- * Licensed under the Eclipse Public License, Version 1.0 (the
+- * "License"); you may not use this file except in compliance
+- * with the License. You may obtain a copy of the License at
+- *
+- *        http://www.eclipse.org/legal/epl-v10.html
+- *
+- * Unless required by applicable law or agreed to in writing,
+- * software distributed under the License is distributed on an
+- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+- * either express or implied. See the License for the specific
+- * language governing permissions and limitations under the
+- * License.
+- *
+- * </bsn.cl>
+- ************************************************************
+- *
+- *
+- *
+- ***********************************************************/
+-
+-#include <arm_qemu_armv7a/arm_qemu_armv7a_config.h>
+-
+-/* <auto.start.cdefs(ONLPSIM_CONFIG_HEADER).source> */
+-#define __arm_qemu_armv7a_config_STRINGIFY_NAME(_x) #_x
+-#define __arm_qemu_armv7a_config_STRINGIFY_VALUE(_x) __arm_qemu_armv7a_config_STRINGIFY_NAME(_x)
+-arm_qemu_armv7a_config_settings_t arm_qemu_armv7a_config_settings[] =
+-{
+-#ifdef ONLPSIM_CONFIG_INCLUDE_LOGGING
+-    { __arm_qemu_armv7a_config_STRINGIFY_NAME(ONLPSIM_CONFIG_INCLUDE_LOGGING), __arm_qemu_armv7a_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_INCLUDE_LOGGING) },
+-#else
+-{ ONLPSIM_CONFIG_INCLUDE_LOGGING(__arm_qemu_armv7a_config_STRINGIFY_NAME), "__undefined__" },
+-#endif
+-#ifdef ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT
+-    { __arm_qemu_armv7a_config_STRINGIFY_NAME(ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT), __arm_qemu_armv7a_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT) },
+-#else
+-{ ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT(__arm_qemu_armv7a_config_STRINGIFY_NAME), "__undefined__" },
+-#endif
+-#ifdef ONLPSIM_CONFIG_LOG_BITS_DEFAULT
+-    { __arm_qemu_armv7a_config_STRINGIFY_NAME(ONLPSIM_CONFIG_LOG_BITS_DEFAULT), __arm_qemu_armv7a_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_LOG_BITS_DEFAULT) },
+-#else
+-{ ONLPSIM_CONFIG_LOG_BITS_DEFAULT(__arm_qemu_armv7a_config_STRINGIFY_NAME), "__undefined__" },
+-#endif
+-#ifdef ONLPSIM_CONFIG_LOG_CUSTOM_BITS_DEFAULT
+-    { __arm_qemu_armv7a_config_STRINGIFY_NAME(ONLPSIM_CONFIG_LOG_CUSTOM_BITS_DEFAULT), __arm_qemu_armv7a_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_LOG_CUSTOM_BITS_DEFAULT) },
+-#else
+-{ ONLPSIM_CONFIG_LOG_CUSTOM_BITS_DEFAULT(__arm_qemu_armv7a_config_STRINGIFY_NAME), "__undefined__" },
+-#endif
+-#ifdef ONLPSIM_CONFIG_PORTING_STDLIB
+-    { __arm_qemu_armv7a_config_STRINGIFY_NAME(ONLPSIM_CONFIG_PORTING_STDLIB), __arm_qemu_armv7a_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_PORTING_STDLIB) },
+-#else
+-{ ONLPSIM_CONFIG_PORTING_STDLIB(__arm_qemu_armv7a_config_STRINGIFY_NAME), "__undefined__" },
+-#endif
+-#ifdef ONLPSIM_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS
+-    { __arm_qemu_armv7a_config_STRINGIFY_NAME(ONLPSIM_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS), __arm_qemu_armv7a_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS) },
+-#else
+-{ ONLPSIM_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS(__arm_qemu_armv7a_config_STRINGIFY_NAME), "__undefined__" },
+-#endif
+-#ifdef ONLPSIM_CONFIG_INCLUDE_UCLI
+-    { __arm_qemu_armv7a_config_STRINGIFY_NAME(ONLPSIM_CONFIG_INCLUDE_UCLI), __arm_qemu_armv7a_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_INCLUDE_UCLI) },
+-#else
+-{ ONLPSIM_CONFIG_INCLUDE_UCLI(__arm_qemu_armv7a_config_STRINGIFY_NAME), "__undefined__" },
+-#endif
+-#ifdef ONLPSIM_CONFIG_SFP_COUNT
+-    { __arm_qemu_armv7a_config_STRINGIFY_NAME(ONLPSIM_CONFIG_SFP_COUNT), __arm_qemu_armv7a_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_SFP_COUNT) },
+-#else
+-{ ONLPSIM_CONFIG_SFP_COUNT(__arm_qemu_armv7a_config_STRINGIFY_NAME), "__undefined__" },
+-#endif
+-    { NULL, NULL }
+-};
+-#undef __arm_qemu_armv7a_config_STRINGIFY_VALUE
+-#undef __arm_qemu_armv7a_config_STRINGIFY_NAME
+-
+-const char*
+-arm_qemu_armv7a_config_lookup(const char* setting)
+-{
+-    int i;
+-    for(i = 0; arm_qemu_armv7a_config_settings[i].name; i++) {
+-        if(!strcmp(arm_qemu_armv7a_config_settings[i].name, setting)) {
+-            return arm_qemu_armv7a_config_settings[i].value;
+-        }
+-    }
+-    return NULL;
+-}
+-
+-int
+-arm_qemu_armv7a_config_show(struct aim_pvs_s* pvs)
+-{
+-    int i;
+-    for(i = 0; arm_qemu_armv7a_config_settings[i].name; i++) {
+-        aim_printf(pvs, "%s = %s\n", arm_qemu_armv7a_config_settings[i].name, arm_qemu_armv7a_config_settings[i].value);
+-    }
+-    return i;
+-}
+-
+-/* <auto.end.cdefs(ONLPSIM_CONFIG_HEADER).source> */
+-
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/PKG.yml b/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/PKG.yml
+deleted file mode 100644
+index 66afda3b..00000000
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/PKG.yml
++++ /dev/null
+@@ -1 +0,0 @@
+-!include $ONL_TEMPLATES/platform-config-platform.yml ARCH=armel VENDOR=qemu BASENAME=arm-qemu-armv7a REVISION=r0 DISTS=jessie
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/src/lib/arm-qemu-armv7a-r0.yml b/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/src/lib/arm-qemu-armv7a-r0.yml
+deleted file mode 100644
+index debda83c..00000000
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/src/lib/arm-qemu-armv7a-r0.yml
++++ /dev/null
+@@ -1,26 +0,0 @@
+----
+-
+-######################################################################
+-#
+-# platform-config for ARM/QEMU
+-#
+-######################################################################
+-
+-arm-qemu-armv7a-r0:
+-
+-  flat_image_tree:
+-    kernel:
+-      <<: *arm-iproc-kernel
+-    dtb:
+-      =: accton_as4610_54.dtb
+-      <<: *arm-iproc-kernel-package
+-    itb:
+-      <<: *armel-itb
+-
+-  loader:
+-
+-    environment:
+-    - device: /dev/mtd1
+-      env_offset: 0x00000000
+-      env_size: 0x00002000
+-      sector_size: 0x00040000
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/src/python/arm_qemu_armv7a_r0/__init__.py b/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/src/python/arm_qemu_armv7a_r0/__init__.py
+deleted file mode 100644
+index 8454c3c8..00000000
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/src/python/arm_qemu_armv7a_r0/__init__.py
++++ /dev/null
+@@ -1,9 +0,0 @@
+-from onl.platform.base import *
+-from onl.platform.qemu import *
+-
+-class OnlPlatform_arm_qemu_armv7a_r0(OnlPlatformQEMU):
+-    PLATFORM='arm-qemu-armv7a-r0'
+-    MODEL="QEMU ARMv7a"
+-    SYS_OBJECT_ID=".2"
+-    PORT_COUNT=0
+-    PORT_CONFIG=""
+diff --git a/packages/platforms/qemu/arm/modules/PKG.yml b/packages/platforms/qemu/arm/modules/PKG.yml
+deleted file mode 100644
+index 2e037923..00000000
+--- a/packages/platforms/qemu/arm/modules/PKG.yml
++++ /dev/null
+@@ -1 +0,0 @@
+-!include $ONL_TEMPLATES/no-arch-vendor-modules.yml ARCH=armel VENDOR=qemu
+diff --git a/packages/platforms/qemu/arm/Makefile b/packages/platforms/qemu/x86-64/Makefile
+similarity index 100%
+rename from packages/platforms/qemu/arm/Makefile
+rename to packages/platforms/qemu/x86-64/Makefile
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/Makefile b/packages/platforms/qemu/x86-64/modules/Makefile
+similarity index 100%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/Makefile
+rename to packages/platforms/qemu/x86-64/modules/Makefile
+diff --git a/packages/platforms/qemu/x86-64/modules/PKG.yml b/packages/platforms/qemu/x86-64/modules/PKG.yml
+new file mode 100644
+index 00000000..63c9462b
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/modules/PKG.yml
+@@ -0,0 +1 @@
++!include $ONL_TEMPLATES/no-arch-vendor-modules.yml ARCH=amd64 VENDOR=qemu
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/.gitignore b/packages/platforms/qemu/x86-64/qemux86-64/.gitignore
+similarity index 100%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/.gitignore
+rename to packages/platforms/qemu/x86-64/qemux86-64/.gitignore
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/modules/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/Makefile
+similarity index 100%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/modules/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/Makefile
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/modules/Makefile
+similarity index 100%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/modules/Makefile
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/modules/PKG.yml b/packages/platforms/qemu/x86-64/qemux86-64/modules/PKG.yml
+new file mode 100644
+index 00000000..8b1719b0
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/qemux86-64/modules/PKG.yml
+@@ -0,0 +1 @@
++!include $ONL_TEMPLATES/no-platform-modules.yml ARCH=amd64 VENDOR=qemu BASENAME=x86-64-qemu-qemux86-64
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/onlp/Makefile
+similarity index 100%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/Makefile
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/onlp/PKG.yml b/packages/platforms/qemu/x86-64/qemux86-64/onlp/PKG.yml
+new file mode 100644
+index 00000000..36339e01
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/PKG.yml
+@@ -0,0 +1 @@
++!include $ONL_TEMPLATES/onlp-platform-any.yml PLATFORM=x86-64-qemu-qemux86-64 ARCH=amd64 TOOLCHAIN=x86_64-linux-gnu
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/Makefile
+similarity index 100%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/Makefile
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/lib/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/lib/Makefile
+similarity index 67%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/lib/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/lib/Makefile
+index a998b3de..94c52a1a 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/lib/Makefile
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/lib/Makefile
+@@ -1,2 +1,2 @@
+-PLATFORM := arm-qemu-armv7a
++PLATFORM := x86-64-qemu-qemux86-64
+ include $(ONL)/packages/base/any/onlp/builds/platform/libonlp-platform.mk
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/lib/arm_qemu_armv7a.mk b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/lib/x86_64_qemu_qemux86-64.mk
+similarity index 59%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/lib/arm_qemu_armv7a.mk
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/lib/x86_64_qemu_qemux86-64.mk
+index e511433f..866e316b 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/lib/arm_qemu_armv7a.mk
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/lib/x86_64_qemu_qemux86-64.mk
+@@ -1,10 +1,10 @@
+ 
+ ###############################################################################
+ #
+-# Inclusive Makefile for the arm_qemu_armv7a module.
++# Inclusive Makefile for the x86_64_qemu_qemux86_64 module.
+ #
+ # Autogenerated 2016-03-31 14:50:33.145280
+ #
+ ###############################################################################
+-arm_qemu_armv7a_BASEDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
++x86_64_qemu_qemux86_64_BASEDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+ 
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/onlpdump/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/onlpdump/Makefile
+similarity index 64%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/onlpdump/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/onlpdump/Makefile
+index c8e08175..9648c625 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/onlpdump/Makefile
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/onlpdump/Makefile
+@@ -1,2 +1,2 @@
+-PLATFORM := arm-qemu-armv7a
++PLATFORM := x86-64-qemu-qemux86-64
+ include $(ONL)/packages/base/any/onlp/builds/platform/onlps.mk
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/.gitignore b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/.gitignore
+new file mode 100644
+index 00000000..50db1071
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/.gitignore
+@@ -0,0 +1,2 @@
++/x86_64_qemu_qemux86_64.mk
++/doc
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/.module b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/.module
+new file mode 100644
+index 00000000..d111f5dd
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/.module
+@@ -0,0 +1 @@
++name: x86_64_qemu_qemux86_64
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/Makefile
+similarity index 92%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/Makefile
+index ea329719..ef9b34e9 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/Makefile
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/Makefile
+@@ -23,6 +23,6 @@
+ #
+ ############################################################
+ include $(ONL)/make/config.mk
+-MODULE := arm_qemu_armv7a
+-AUTOMODULE := arm_qemu_armv7a
++MODULE := x86_64_qemu_qemux86_64
++AUTOMODULE := x86_64_qemu_qemux86_64
+ include $(BUILDER)/definemodule.mk
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/auto/make.mk b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/auto/make.mk
+similarity index 81%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/auto/make.mk
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/auto/make.mk
+index 00ff4b8d..6584b096 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/auto/make.mk
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/auto/make.mk
+@@ -19,11 +19,11 @@
+ # </bsn.cl>
+ ############################################################
+ #
+-# arm_qemu_armv7a Autogeneration
++# x86_64_qemu_qemux86_64 Autogeneration
+ #
+ ############################################################
+ 
+-arm_qemu_armv7a_AUTO_DEFS := module/auto/arm_qemu_armv7a.yml
+-arm_qemu_armv7a_AUTO_DIRS := module/inc/arm_qemu_armv7a module/src
++x86_64_qemu_qemux86_64_AUTO_DEFS := module/auto/x86_64_qemu_qemux86_64.yml
++x86_64_qemu_qemux86_64_AUTO_DIRS := module/inc/x86_64_qemu_qemux86_64 module/src
+ include $(BUILDER)/auto.mk
+ 
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/auto/arm_qemu_armv7a.yml b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/auto/x86_64_qemu_qemux86-64.yml
+similarity index 95%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/auto/arm_qemu_armv7a.yml
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/auto/x86_64_qemu_qemux86-64.yml
+index 7dc33181..4306b182 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/auto/arm_qemu_armv7a.yml
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/auto/x86_64_qemu_qemux86-64.yml
+@@ -19,7 +19,7 @@
+ # </bsn.cl>
+ ############################################################
+ #
+-# arm_qemu_armv7a Autogeneration Definitions.
++# x86_64_qemu_qemux86_64 Autogeneration Definitions.
+ #
+ ############################################################
+ 
+@@ -53,7 +53,7 @@ definitions:
+   cdefs:
+     ONLPSIM_CONFIG_HEADER:
+       defs: *cdefs
+-      basename: arm_qemu_armv7a_config
++      basename: x86_64_qemu_qemux86_64_config
+ 
+   portingmacro:
+     ONLPSIM:
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a.x b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.x
+similarity index 93%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a.x
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.x
+index f09b3e22..3bd4bcb2 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a.x
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.x
+@@ -23,7 +23,7 @@
+  *
+  ***********************************************************/
+ 
+-#include <arm_qemu_armv7a/arm_qemu_armv7a_config.h>
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h>
+ 
+ /* <--auto.start.xmacro(ALL).define> */
+ /* <auto.end.xmacro(ALL).define> */
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_config.h b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h
+similarity index 85%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_config.h
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h
+index 10f04cfe..3c02a8b4 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_config.h
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h
+@@ -26,9 +26,9 @@
+ /**************************************************************************//**
+  *
+  * @file
+- * @brief arm_qemu_armv7a Configuration Header
++ * @brief x86_64_qemu_qemux86_64 Configuration Header
+  *
+- * @addtogroup arm_qemu_armv7a-config
++ * @addtogroup x86_64_qemu_qemux86_64-config
+  * @{
+  *
+  *****************************************************************************/
+@@ -39,7 +39,7 @@
+ #include <global_custom_config.h>
+ #endif
+ #ifdef ONLPSIM_INCLUDE_CUSTOM_CONFIG
+-#include <arm_qemu_armv7a_custom_config.h>
++#include <x86_64_qemu_qemux86_64_custom_config.h>
+ #endif
+ 
+ /* <auto.start.cdefs(ONLPSIM_CONFIG_HEADER).header> */
+@@ -131,32 +131,32 @@
+  */
+ 
+ /** Configuration settings structure. */
+-typedef struct arm_qemu_armv7a_config_settings_s {
++typedef struct x86_64_qemu_qemux86_64_config_settings_s {
+     /** name */
+     const char* name;
+     /** value */
+     const char* value;
+-} arm_qemu_armv7a_config_settings_t;
++} x86_64_qemu_qemux86_64_config_settings_t;
+ 
+ /** Configuration settings table. */
+-/** arm_qemu_armv7a_config_settings table. */
+-extern arm_qemu_armv7a_config_settings_t arm_qemu_armv7a_config_settings[];
++/** x86_64_qemu_qemux86_64_config_settings table. */
++extern x86_64_qemu_qemux86_64_config_settings_t x86_64_qemu_qemux86_64_config_settings[];
+ 
+ /**
+  * @brief Lookup a configuration setting.
+  * @param setting The name of the configuration option to lookup.
+  */
+-const char* arm_qemu_armv7a_config_lookup(const char* setting);
++const char* x86_64_qemu_qemux86_64_config_lookup(const char* setting);
+ 
+ /**
+  * @brief Show the compile-time configuration.
+  * @param pvs The output stream.
+  */
+-int arm_qemu_armv7a_config_show(struct aim_pvs_s* pvs);
++int x86_64_qemu_qemux86_64_config_show(struct aim_pvs_s* pvs);
+ 
+ /* <auto.end.cdefs(ONLPSIM_CONFIG_HEADER).header> */
+ 
+-#include "arm_qemu_armv7a_porting.h"
++#include "x86_64_qemu_qemux86_64_porting.h"
+ 
+ #endif /* __ONLPSIM_CONFIG_H__ */
+ /* @} */
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_dox.h b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_dox.h
+similarity index 78%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_dox.h
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_dox.h
+index 14e383d9..8327b1bb 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_dox.h
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_dox.h
+@@ -25,14 +25,14 @@
+ 
+ /********************************************************//**
+  *
+- * arm_qemu_armv7a Doxygen Header
++ * x86_64_qemu_qemux86_64 Doxygen Header
+  *
+  ***********************************************************/
+ #ifndef __ONLPSIM_DOX_H__
+ #define __ONLPSIM_DOX_H__
+ 
+ /**
+- * @defgroup arm_qemu_armv7a arm_qemu_armv7a - onlpsim Description
++ * @defgroup x86_64_qemu_qemux86_64 x86_64_qemu_qemux86_64 - onlpsim Description
+  *
+ 
+ The documentation overview for this module should go here.
+@@ -40,9 +40,9 @@ The documentation overview for this module should go here.
+  *
+  * @{
+  *
+- * @defgroup arm_qemu_armv7a-arm_qemu_armv7a Public Interface
+- * @defgroup arm_qemu_armv7a-config Compile Time Configuration
+- * @defgroup arm_qemu_armv7a-porting Porting Macros
++ * @defgroup x86_64_qemu_qemux86_64-x86_64_qemu_qemux86_64 Public Interface
++ * @defgroup x86_64_qemu_qemux86_64-config Compile Time Configuration
++ * @defgroup x86_64_qemu_qemux86_64-porting Porting Macros
+  *
+  * @}
+  *
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_porting.h b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_porting.h
+similarity index 97%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_porting.h
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_porting.h
+index f690ae3f..3d1118e6 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/inc/arm_qemu_armv7a/arm_qemu_armv7a_porting.h
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/inc/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_porting.h
+@@ -26,9 +26,9 @@
+ /********************************************************//**
+  *
+  * @file
+- * @brief arm_qemu_armv7a Porting Macros.
++ * @brief x86_64_qemu_qemux86_64 Porting Macros.
+  *
+- * @addtogroup arm_qemu_armv7a-porting
++ * @addtogroup x86_64_qemu_qemux86_64-porting
+  * @{
+  *
+  ***********************************************************/
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/make.mk b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/make.mk
+similarity index 80%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/make.mk
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/make.mk
+index 763d1d28..225b5888 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/make.mk
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/make.mk
+@@ -23,7 +23,7 @@
+ #
+ ############################################################
+ THIS_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+-arm_qemu_armv7a_INCLUDES := -I $(THIS_DIR)inc
+-arm_qemu_armv7a_INTERNAL_INCLUDES := -I $(THIS_DIR)src
+-arm_qemu_armv7a_DEPENDMODULE_ENTRIES := init:arm_qemu_armv7a ucli:arm_qemu_armv7a
++x86_64_qemu_qemux86_64_INCLUDES := -I $(THIS_DIR)inc
++x86_64_qemu_qemux86_64_INTERNAL_INCLUDES := -I $(THIS_DIR)src
++x86_64_qemu_qemux86_64_DEPENDMODULE_ENTRIES := init:x86_64_qemu_qemux86_64 ucli:x86_64_qemu_qemux86_64
+ 
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/Makefile
+similarity index 92%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/Makefile
+index ba6fb101..0c1890b5 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/Makefile
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/Makefile
+@@ -26,5 +26,5 @@
+ include ../../../../init.mk
+ 
+ ucli:
+-	$(SUBMODULE_BIGCODE)/tools/uclihandlers.py arm_qemu_armv7a_ucli.c
++	$(SUBMODULE_BIGCODE)/tools/uclihandlers.py x86_64_qemu_qemux86_64_ucli.c
+ 
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/fani.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/fani.c
+similarity index 96%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/fani.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/fani.c
+index 838ddd49..48f30924 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/fani.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/fani.c
+@@ -23,7 +23,7 @@
+  *
+  ***********************************************************/
+ #include <onlp/platformi/fani.h>
+-#include "arm_qemu_armv7a_int.h"
++#include "x86_64_qemu_qemux86_64_int.h"
+ 
+ /*
+  * This function will be called prior to all of onlp_fani_* functions.
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/ledi.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/ledi.c
+similarity index 95%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/ledi.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/ledi.c
+index af457cd0..8dde062d 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/ledi.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/ledi.c
+@@ -22,7 +22,7 @@
+  *
+  ***********************************************************/
+ #include <onlp/platformi/ledi.h>
+-#include "arm_qemu_armv7a_int.h"
++#include "x86_64_qemu_qemux86_64_int.h"
+ 
+ int
+ onlp_ledi_init(void)
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/make.mk b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/make.mk
+similarity index 96%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/make.mk
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/make.mk
+index a0485325..85532bc0 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/make.mk
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/make.mk
+@@ -23,7 +23,7 @@
+ #
+ ############################################################
+ 
+-LIBRARY := arm_qemu_armv7a
++LIBRARY := x86_64_qemu_qemux86_64
+ $(LIBRARY)_SUBDIR := $(dir $(lastword $(MAKEFILE_LIST)))
+ #$(LIBRARY)_LAST := 1
+ include $(BUILDER)/lib.mk
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/psui.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/psui.c
+similarity index 95%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/psui.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/psui.c
+index 1e183b4f..3b579239 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/psui.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/psui.c
+@@ -23,7 +23,7 @@
+  *
+  ***********************************************************/
+ #include <onlp/platformi/psui.h>
+-#include "arm_qemu_armv7a_int.h"
++#include "x86_64_qemu_qemux86_64_int.h"
+ 
+ int
+ onlp_psui_init(void)
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/sfpi.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/sfpi.c
+similarity index 93%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/sfpi.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/sfpi.c
+index b5e813d0..aba1d0d9 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/sfpi.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/sfpi.c
+@@ -22,8 +22,8 @@
+  *
+  ***********************************************************/
+ #include <onlp/platformi/sfpi.h>
+-#include <arm_qemu_armv7a/arm_qemu_armv7a_config.h>
+-#include "arm_qemu_armv7a_log.h"
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h>
++#include "x86_64_qemu_qemux86_64_log.h"
+ 
+ static int sfp_count__ = ONLPSIM_CONFIG_SFP_COUNT;
+ 
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/sysi.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/sysi.c
+similarity index 95%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/sysi.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/sysi.c
+index b4bbb929..4b2a144d 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/sysi.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/sysi.c
+@@ -24,12 +24,12 @@
+  ***********************************************************/
+ #include <onlp/platformi/sysi.h>
+ #include <onlplib/crc32.h>
+-#include "arm_qemu_armv7a_log.h"
++#include "x86_64_qemu_qemux86_64_log.h"
+ 
+ const char*
+ onlp_sysi_platform_get(void)
+ {
+-    return "arm-qemu-armv7a-r0";
++    return "x86-64-qemu-qemux86-64-r0";
+ }
+ 
+ int
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/thermali.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/thermali.c
+similarity index 96%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/thermali.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/thermali.c
+index f77ad872..f8ef9356 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/thermali.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/thermali.c
+@@ -23,7 +23,7 @@
+  *
+  ***********************************************************/
+ #include <onlp/platformi/thermali.h>
+-#include "arm_qemu_armv7a_log.h"
++#include "x86_64_qemu_qemux86_64_log.h"
+ 
+ int
+ onlp_thermali_init(void)
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_config.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_config.c
+new file mode 100644
+index 00000000..07d9c1ca
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_config.c
+@@ -0,0 +1,101 @@
++/************************************************************
++ * <bsn.cl fy=2014 v=onl>
++ *
++ *        Copyright 2014, 2015 Big Switch Networks, Inc.
++ *
++ * Licensed under the Eclipse Public License, Version 1.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at
++ *
++ *        http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Unless required by applicable law or agreed to in writing,
++ * software distributed under the License is distributed on an
++ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
++ * either express or implied. See the License for the specific
++ * language governing permissions and limitations under the
++ * License.
++ *
++ * </bsn.cl>
++ ************************************************************
++ *
++ *
++ *
++ ***********************************************************/
++
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h>
++
++/* <auto.start.cdefs(ONLPSIM_CONFIG_HEADER).source> */
++#define __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(_x) #_x
++#define __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(_x) __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(_x)
++x86_64_qemu_qemux86_64_config_settings_t x86_64_qemu_qemux86_64_config_settings[] =
++{
++#ifdef ONLPSIM_CONFIG_INCLUDE_LOGGING
++    { __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(ONLPSIM_CONFIG_INCLUDE_LOGGING), __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_INCLUDE_LOGGING) },
++#else
++{ ONLPSIM_CONFIG_INCLUDE_LOGGING(__x86_64_qemu_qemux86_64_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT
++    { __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT), __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT) },
++#else
++{ ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT(__x86_64_qemu_qemux86_64_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef ONLPSIM_CONFIG_LOG_BITS_DEFAULT
++    { __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(ONLPSIM_CONFIG_LOG_BITS_DEFAULT), __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_LOG_BITS_DEFAULT) },
++#else
++{ ONLPSIM_CONFIG_LOG_BITS_DEFAULT(__x86_64_qemu_qemux86_64_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef ONLPSIM_CONFIG_LOG_CUSTOM_BITS_DEFAULT
++    { __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(ONLPSIM_CONFIG_LOG_CUSTOM_BITS_DEFAULT), __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_LOG_CUSTOM_BITS_DEFAULT) },
++#else
++{ ONLPSIM_CONFIG_LOG_CUSTOM_BITS_DEFAULT(__x86_64_qemu_qemux86_64_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef ONLPSIM_CONFIG_PORTING_STDLIB
++    { __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(ONLPSIM_CONFIG_PORTING_STDLIB), __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_PORTING_STDLIB) },
++#else
++{ ONLPSIM_CONFIG_PORTING_STDLIB(__x86_64_qemu_qemux86_64_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef ONLPSIM_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS
++    { __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(ONLPSIM_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS), __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS) },
++#else
++{ ONLPSIM_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS(__x86_64_qemu_qemux86_64_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef ONLPSIM_CONFIG_INCLUDE_UCLI
++    { __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(ONLPSIM_CONFIG_INCLUDE_UCLI), __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_INCLUDE_UCLI) },
++#else
++{ ONLPSIM_CONFIG_INCLUDE_UCLI(__x86_64_qemu_qemux86_64_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++#ifdef ONLPSIM_CONFIG_SFP_COUNT
++    { __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME(ONLPSIM_CONFIG_SFP_COUNT), __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE(ONLPSIM_CONFIG_SFP_COUNT) },
++#else
++{ ONLPSIM_CONFIG_SFP_COUNT(__x86_64_qemu_qemux86_64_config_STRINGIFY_NAME), "__undefined__" },
++#endif
++    { NULL, NULL }
++};
++#undef __x86_64_qemu_qemux86_64_config_STRINGIFY_VALUE
++#undef __x86_64_qemu_qemux86_64_config_STRINGIFY_NAME
++
++const char*
++x86_64_qemu_qemux86_64_config_lookup(const char* setting)
++{
++    int i;
++    for(i = 0; x86_64_qemu_qemux86_64_config_settings[i].name; i++) {
++        if(!strcmp(x86_64_qemu_qemux86_64_config_settings[i].name, setting)) {
++            return x86_64_qemu_qemux86_64_config_settings[i].value;
++        }
++    }
++    return NULL;
++}
++
++int
++x86_64_qemu_qemux86_64_config_show(struct aim_pvs_s* pvs)
++{
++    int i;
++    for(i = 0; x86_64_qemu_qemux86_64_config_settings[i].name; i++) {
++        aim_printf(pvs, "%s = %s\n", x86_64_qemu_qemux86_64_config_settings[i].name, x86_64_qemu_qemux86_64_config_settings[i].value);
++    }
++    return i;
++}
++
++/* <auto.end.cdefs(ONLPSIM_CONFIG_HEADER).source> */
++
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_enums.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_enums.c
+similarity index 93%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_enums.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_enums.c
+index 4ed1a0d3..684e97e8 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_enums.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_enums.c
+@@ -23,7 +23,7 @@
+  *
+  ***********************************************************/
+ 
+-#include <arm_qemu_armv7a/arm_qemu_armv7a_config.h>
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h>
+ 
+ /* <--auto.start.enum(ALL).source> */
+ /* <auto.end.enum(ALL).source> */
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_int.h b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_int.h
+similarity index 93%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_int.h
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_int.h
+index caae1c2b..26010dd7 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_int.h
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_int.h
+@@ -26,7 +26,7 @@
+ #ifndef __ONLPSIM_INT_H__
+ #define __ONLPSIM_INT_H__
+ 
+-#include <arm_qemu_armv7a/arm_qemu_armv7a_config.h>
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h>
+ 
+ 
+ #endif /* __ONLPSIM_INT_H__ */
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_log.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_log.c
+similarity index 88%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_log.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_log.c
+index a9a07874..11775f51 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_log.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_log.c
+@@ -23,11 +23,11 @@
+  *
+  ***********************************************************/
+ 
+-#include <arm_qemu_armv7a/arm_qemu_armv7a_config.h>
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h>
+ 
+-#include "arm_qemu_armv7a_log.h"
++#include "x86_64_qemu_qemux86_64_log.h"
+ /*
+- * arm_qemu_armv7a log struct.
++ * x86_64_qemu_qemux86_64 log struct.
+  */
+ AIM_LOG_STRUCT_DEFINE(
+                       ONLPSIM_CONFIG_LOG_OPTIONS_DEFAULT,
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_log.h b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_log.h
+similarity index 95%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_log.h
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_log.h
+index 45ee0ab2..1d4b9b29 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_log.h
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_log.h
+@@ -26,7 +26,7 @@
+ #ifndef __ONLPSIM_LOG_H__
+ #define __ONLPSIM_LOG_H__
+ 
+-#define AIM_LOG_MODULE_NAME arm_qemu_armv7a
++#define AIM_LOG_MODULE_NAME x86_64_qemu_qemux86_64
+ #include <AIM/aim_log.h>
+ 
+ #endif /* __ONLPSIM_LOG_H__ */
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_module.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_module.c
+similarity index 84%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_module.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_module.c
+index 31554d80..57c45cae 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_module.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_module.c
+@@ -23,19 +23,19 @@
+  *
+  ***********************************************************/
+ 
+-#include <arm_qemu_armv7a/arm_qemu_armv7a_config.h>
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h>
+ 
+-#include "arm_qemu_armv7a_log.h"
++#include "x86_64_qemu_qemux86_64_log.h"
+ 
+ static int
+ datatypes_init__(void)
+ {
+ #define ONLPSIM_ENUMERATION_ENTRY(_enum_name, _desc)     AIM_DATATYPE_MAP_REGISTER(_enum_name, _enum_name##_map, _desc,                               AIM_LOG_INTERNAL);
+-#include <arm_qemu_armv7a/arm_qemu_armv7a.x>
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.x>
+     return 0;
+ }
+ 
+-void __arm_qemu_armv7a_module_init__(void)
++void __x86_64_qemu_qemux86_64_module_init__(void)
+ {
+     AIM_LOG_STRUCT_REGISTER();
+     datatypes_init__();
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_ucli.c b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_ucli.c
+similarity index 67%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_ucli.c
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_ucli.c
+index 512d94c0..ec7cd6cb 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/module/src/arm_qemu_armv7a_ucli.c
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/module/src/x86_64_qemu_qemux86_64_ucli.c
+@@ -23,7 +23,7 @@
+  *
+  ***********************************************************/
+ 
+-#include <arm_qemu_armv7a/arm_qemu_armv7a_config.h>
++#include <x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64_config.h>
+ 
+ #if ONLPSIM_CONFIG_INCLUDE_UCLI == 1
+ 
+@@ -32,9 +32,9 @@
+ #include <uCli/ucli_handler_macros.h>
+ 
+ static ucli_status_t
+-arm_qemu_armv7a_ucli_ucli__config__(ucli_context_t* uc)
++x86_64_qemu_qemux86_64_ucli_ucli__config__(ucli_context_t* uc)
+ {
+-    UCLI_HANDLER_MACRO_MODULE_CONFIG(arm_qemu_armv7a)
++    UCLI_HANDLER_MACRO_MODULE_CONFIG(x86_64_qemu_qemux86_64)
+ }
+ 
+ /* <auto.ucli.handlers.start> */
+@@ -44,37 +44,37 @@ arm_qemu_armv7a_ucli_ucli__config__(ucli_context_t* uc)
+  * source file.
+  *
+  *****************************************************************************/
+-static ucli_command_handler_f arm_qemu_armv7a_ucli_ucli_handlers__[] =
++static ucli_command_handler_f x86_64_qemu_qemux86_64_ucli_ucli_handlers__[] =
+ {
+-    arm_qemu_armv7a_ucli_ucli__config__,
++    x86_64_qemu_qemux86_64_ucli_ucli__config__,
+     NULL
+ };
+ /******************************************************************************/
+ /* <auto.ucli.handlers.end> */
+ 
+ static ucli_module_t
+-arm_qemu_armv7a_ucli_module__ =
++x86_64_qemu_qemux86_64_ucli_module__ =
+     {
+-        "arm_qemu_armv7a_ucli",
++        "x86_64_qemu_qemux86_64_ucli",
+         NULL,
+-        arm_qemu_armv7a_ucli_ucli_handlers__,
++        x86_64_qemu_qemux86_64_ucli_ucli_handlers__,
+         NULL,
+         NULL,
+     };
+ 
+ ucli_node_t*
+-arm_qemu_armv7a_ucli_node_create(void)
++x86_64_qemu_qemux86_64_ucli_node_create(void)
+ {
+     ucli_node_t* n;
+-    ucli_module_init(&arm_qemu_armv7a_ucli_module__);
+-    n = ucli_node_create("arm_qemu_armv7a", NULL, &arm_qemu_armv7a_ucli_module__);
+-    ucli_node_subnode_add(n, ucli_module_log_node_create("arm_qemu_armv7a"));
++    ucli_module_init(&x86_64_qemu_qemux86_64_ucli_module__);
++    n = ucli_node_create("x86_64_qemu_qemux86_64", NULL, &x86_64_qemu_qemux86_64_ucli_module__);
++    ucli_node_subnode_add(n, ucli_module_log_node_create("x86_64_qemu_qemux86_64"));
+     return n;
+ }
+ 
+ #else
+ void*
+-arm_qemu_armv7a_ucli_node_create(void)
++x86_64_qemu_qemux86_64_ucli_node_create(void)
+ {
+     return NULL;
+ }
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/arm_qemu_armv7a.doxy b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.doxy
+similarity index 99%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/arm_qemu_armv7a.doxy
+rename to packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.doxy
+index 8b6b4e8e..98984498 100644
+--- a/packages/platforms/qemu/arm/arm-qemu-armv7a/onlp/builds/arm_qemu_armv7a/arm_qemu_armv7a.doxy
++++ b/packages/platforms/qemu/x86-64/qemux86-64/onlp/builds/x86_64_qemu_qemux86_64/x86_64_qemu_qemux86_64.doxy
+@@ -26,7 +26,7 @@ DOXYFILE_ENCODING      = UTF-8
+ # identify the project. Note that if you do not use Doxywizard you need
+ # to put quotes around the project name if it contains spaces.
+ 
+-PROJECT_NAME           = "arm_qemu_armv7a"
++PROJECT_NAME           = "x86_64_qemu_qemux86_64"
+ 
+ # The PROJECT_NUMBER tag can be used to enter a project or revision number.
+ # This could be handy for archiving the generated documentation or
+diff --git a/packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/platform-config/Makefile
+similarity index 100%
+rename from packages/platforms/qemu/arm/arm-qemu-armv7a/platform-config/r0/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/platform-config/Makefile
+diff --git a/packages/platforms/qemu/arm/modules/Makefile b/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/Makefile
+similarity index 100%
+rename from packages/platforms/qemu/arm/modules/Makefile
+rename to packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/Makefile
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/PKG.yml b/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/PKG.yml
+new file mode 100644
+index 00000000..ac34bcf6
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/PKG.yml
+@@ -0,0 +1 @@
++!include $ONL_TEMPLATES/platform-config-platform.yml ARCH=amd64 VENDOR=qemu BASENAME=x86-64-qemu-qemux86 REVISION=r0 DISTS=jessie
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/src/lib/x86-64-qemu-qemux86-64-r0.yml b/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/src/lib/x86-64-qemu-qemux86-64-r0.yml
+new file mode 100644
+index 00000000..bda98fc1
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/src/lib/x86-64-qemu-qemux86-64-r0.yml
+@@ -0,0 +1,25 @@
++---
++
++######################################################################
++#
++# platform-config for x86-64/QEMU
++#
++######################################################################
++
++x86-64-qemu-qemux86-64-r0:
++
++  grub:
++
++    serial: >-
++      --port=0x3f8
++      --speed=115200
++      --word=8
++      --parity=no
++      --stop=1
++
++    kernel:
++      <<: *kernel-4-19
++
++    args: >-
++      console=ttyS0,115200n8
++
+diff --git a/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/src/python/x86_64_qemu_qemux86_64_r0/__init__.py b/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/src/python/x86_64_qemu_qemux86_64_r0/__init__.py
+new file mode 100644
+index 00000000..e2f6edfe
+--- /dev/null
++++ b/packages/platforms/qemu/x86-64/qemux86-64/platform-config/r0/src/python/x86_64_qemu_qemux86_64_r0/__init__.py
+@@ -0,0 +1,9 @@
++from onl.platform.base import *
++from onl.platform.qemu import *
++
++class OnlPlatform_x86_64_qemu_qemux86_64_r0(OnlPlatformQEMU):
++    PLATFORM='x86-64-qemu-qemux86-64-r0'
++    MODEL="QEMU QEMUX86_64"
++    SYS_OBJECT_ID=".2"
++    PORT_COUNT=0
++    PORT_CONFIG=""
+-- 
+2.25.1
+
