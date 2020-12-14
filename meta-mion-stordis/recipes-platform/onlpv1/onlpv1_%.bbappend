@@ -38,3 +38,9 @@ EXTRA_OEMAKE_append = "\
 "
 
 COMPATIBLE_MACHINE="(stordis-bf2556x-1t|stordis-bf6064x-t)"
+
+do_install_append_bf2556x() {
+  # install platform.xml file
+  install -d ${D}/lib/platform-config/${ONL_ARCH}-${ONL_VENDOR}-${ONL_MACHINE}-r${ONIE_MACHINE_REV}/onl/
+  install -m 0664 packages/platforms/${ONIE_VENDOR}/${ONL_ARCH}/${ONL_MACHINE}/platform-config/r0/src/lib/platform.xml ${D}/lib/platform-config/${ONL_ARCH}-${ONL_VENDOR}-${ONL_MACHINE}-r${ONIE_MACHINE_REV}/onl/platform.xml
+}
