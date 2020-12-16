@@ -26,7 +26,7 @@ index 285016de..0bbded28 100644
          self.insmod('optoe')
 -        
 +        ''' Wait for i2c devices to come up before we write to them '''
-+        for bus in [1, 2]:
++        for bus in [0, 1]:
 +            wait_for_file('/sys/bus/i2c/devices/i2c-{}/new_device'.format(bus), timeout=10)
 + 
          ########### initialize I2C bus 1 ###########
