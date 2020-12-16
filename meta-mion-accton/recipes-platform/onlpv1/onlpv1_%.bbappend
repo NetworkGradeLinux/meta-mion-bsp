@@ -38,6 +38,7 @@ SRC_URI_append_wedge100bf-32x = " \
     file://0001-i2c-bigcode-use-libi2c-for-onlpdump-and-update-headers.patch;patchdir=${SUBMODULE_BIGCODE} \
     file://0001-i2c-infra-use-libi2c-for-onlpdump-and-update-headers.patch;patchdir=${SUBMODULE_INFRA} \
     file://0001-i2c-use-libi2c-for-onlpdump-and-update-headers.patch \
+    file://wait_for_i2c.patch \
 "
 SRC_URI_append_wedge100bf-65x = " \
     file://filter.patch \
