@@ -1,0 +1,10 @@
+diff --git a/packages/platforms/stordis/x86-64/bf6064x-t/platform-config/r0/src/python/x86_64_stordis_bf6064x_t_r0/__init__.py b/packages/platforms/stordis/x86-64/bf6064x-t/platform-config/r0/src/python/x86_64_stordis_bf6064x_t_r0/__init__.py
+index be64b848..bd0ca96d 100755
+--- a/packages/platforms/stordis/x86-64/bf6064x-t/platform-config/r0/src/python/x86_64_stordis_bf6064x_t_r0/__init__.py
++++ b/packages/platforms/stordis/x86-64/bf6064x-t/platform-config/r0/src/python/x86_64_stordis_bf6064x_t_r0/__init__.py
+@@ -9,5 +9,4 @@ class OnlPlatform_x86_64_stordis_bf6064x_t_r0(OnlPlatformStordis,
+     SYS_OBJECT_ID = ".6064"
+ 
+     def baseconfig(self):
+-        self.insmod('irq_debug')
+         return True

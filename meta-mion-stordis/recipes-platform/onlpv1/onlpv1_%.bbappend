@@ -27,6 +27,7 @@ SRC_URI_append = " \
 
 SRC_URI_append_bf6064x = " \
     file://0001-Makefile-Add-FILTER-from-src-to-machine-name.patch \
+    file://remove_irq_debug.patch \
 "
 
 
