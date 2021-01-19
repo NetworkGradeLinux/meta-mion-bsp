@@ -14,8 +14,8 @@ SRCREV_bigcode_bf6064x = "94091600faa76fac492b4be2ffab17cb9788d697"
 ONL_BRANCH_bf2556x = "main"
 ONL_BRANCH_bf6064x = "main"
 
-URI_ONL_bf2556x = "git://git@github.com/APS-Networks/OpenNetworkLinux.git;protocol=ssh;branch=${ONL_BRANCH}"
-URI_ONL_bf6064x = "git://git@github.com/APS-Networks/OpenNetworkLinux.git;protocol=ssh;branch=${ONL_BRANCH}"
+URI_ONL_bf2556x = "git://github.com/APS-Networks/OpenNetworkLinux.git;branch=${ONL_BRANCH}"
+URI_ONL_bf6064x = "git://github.com/APS-Networks/OpenNetworkLinux.git;branch=${ONL_BRANCH}"
 
 TARGET_CFLAGS_bf6064x += "-Wno-error -Wno-error=restrict -Wno-error=format-overflow -Wno-error=cpp"
 
