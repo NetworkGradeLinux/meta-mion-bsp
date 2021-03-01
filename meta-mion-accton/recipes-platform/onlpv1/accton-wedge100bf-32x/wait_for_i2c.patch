@@ -1,0 +1,45 @@
+diff --git a/packages/platforms/accton/x86-64/wedge100bf-32x/platform-config/r0/src/python/x86_64_accton_wedge100bf_32x_r0/__init__.py b/packages/platforms/accton/x86-64/wedge100bf-32x/platform-config/r0/src/python/x86_64_accton_wedge100bf_32x_r0/__init__.py
+index 285016de..0bbded28 100644
+--- a/packages/platforms/accton/x86-64/wedge100bf-32x/platform-config/r0/src/python/x86_64_accton_wedge100bf_32x_r0/__init__.py
++++ b/packages/platforms/accton/x86-64/wedge100bf-32x/platform-config/r0/src/python/x86_64_accton_wedge100bf_32x_r0/__init__.py
+@@ -1,6 +1,17 @@
+ from onl.platform.base import *
+ from onl.platform.accton import *
+ 
++
++import os
++import time
++
++def wait_for_file(path, timeout, interval=0.1):
++    start = time.time()
++    while not os.path.exists(path) and time.time() - start < timeout:
++        time.sleep(interval)
++    if time.time() - start > timeout and not os.path.exists(path):
++        raise Exception('Timed out waiting for file: "%s"' % path)
++
+ class OnlPlatform_x86_64_accton_wedge100bf_32x_r0(OnlPlatformAccton,
+                                                 OnlPlatformPortConfig_32x100):
+     MODEL="Wedge-100bf-32X"
+@@ -9,7 +20,10 @@ class OnlPlatform_x86_64_accton_wedge100bf_32x_r0(OnlPlatformAccton,
+ 
+     def baseconfig(self):
+         self.insmod('optoe')
+-        
++        ''' Wait for i2c devices to come up before we write to them '''
++        for bus in [0, 1]:
++            wait_for_file('/sys/bus/i2c/devices/i2c-{}/new_device'.format(bus), timeout=10)
++ 
+         ########### initialize I2C bus 1 ###########
+         self.new_i2c_devices([
+                 # initialize multiplexer (PCA9548)
+@@ -21,7 +35,9 @@ class OnlPlatform_x86_64_accton_wedge100bf_32x_r0(OnlPlatformAccton,
+ 
+                 ('24c64', 0x50, 40),
+                 ])
+-                
++
++        wait_for_file('/sys/bus/i2c/devices/i2c-40/new_device', timeout=10)
++        
+         # Initialize QSFP devices
+         self.new_i2c_device('optoe1', 0x50, 2)
+         self.new_i2c_device('optoe1', 0x50, 3)

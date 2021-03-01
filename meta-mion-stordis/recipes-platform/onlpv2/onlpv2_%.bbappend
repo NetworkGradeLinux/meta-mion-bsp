@@ -6,8 +6,8 @@ FILESEXTRAPATHS_prepend_bf6064x := "${THISDIR}/${MACHINE}:"
 ONL_BRANCH_bf2556x = "main"
 ONL_BRANCH_bf6064x = "main"
 
-URI_ONL_bf2556x = "git://git@github.com/APS-Networks/OpenNetworkLinuxv2.git;protocol=ssh;branch=${ONL_BRANCH}"
-URI_ONL_bf6064x = "git://git@github.com/APS-Networks/OpenNetworkLinuxv2.git;protocol=ssh;branch=${ONL_BRANCH}"
+URI_ONL_bf2556x = "git://github.com/APS-Networks/OpenNetworkLinuxv2.git;branch=${ONL_BRANCH}"
+URI_ONL_bf6064x = "git://github.com/APS-Networks/OpenNetworkLinuxv2.git;branch=${ONL_BRANCH}"
 
 MODULE_bf2556x="x86_64_stordis_bf2556x_1t"
 MODULE_bf6064x="x86_64_stordis_bf6064x_t"
