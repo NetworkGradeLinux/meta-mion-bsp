@@ -22,7 +22,6 @@ SRC_URI_append += "file://0005-fsl-ls1043a-rdb-sdk.patch \
           file://0020-accton-as5114.patch \
           file://0021-tn48m-add-sfp-eeprom-support-to-ethtool.patch \
           file://0022-delta-tn48m-dn-series-dts.patch \
-          file://0022-marvell-wa-tx-disable.patch \
           file://defconfig \
           file://veth.cfg \
           file://crypto.cfg \
