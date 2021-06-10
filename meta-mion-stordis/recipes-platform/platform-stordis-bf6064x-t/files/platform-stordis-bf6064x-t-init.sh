@@ -2,10 +2,6 @@
 
 # SPDX-License-Identifier: MIT 
 
-function set_clocksouce() {
-	echo tsc > /sys/devices/system/clocksource/clocksource0/current_clocksource
-}
-
 function enable_tx() {
 	# Set Module TX-Disable Registers
 	i2cset -y 0 0x70 0x20
@@ -39,5 +35,4 @@ function wait_for_file() {
 	return 1
 }
 
-wait_for_file /sys/bus/i2c/devices/0-0069 && set_clocksouce
 wait_for_file /sys/bus/i2c/devices/i2c-0 && enable_tx
