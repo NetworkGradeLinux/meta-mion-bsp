@@ -7,7 +7,8 @@ testing purposes.
 
 The qemu image varies from the usual invocation of the build script in that only
 the machine name is used. To build the image, run:
-`../mc_build.sh -v qemu -m qemux86-64 -h host-onie:mion-image-onlpv1`
+
+`../cronie.sh -v qemu -m qemux86-64 mion-image-onlpv1-ptest`
 
 ## Running qemu
 
@@ -29,8 +30,5 @@ you are able to login.
 ## Known Issues
 
 Please note that at this time, only basic QA/testing has been performed for this
-image, so other issues may exist. 
+image, so issues may exist. 
 
-* `onlpdump.py` fails due to linking issues in the build process. When linked
-  manually, it fails with an error of a supposedly non-existent `onlp.init`
-  attribute.
