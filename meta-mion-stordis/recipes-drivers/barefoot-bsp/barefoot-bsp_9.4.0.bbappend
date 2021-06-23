@@ -11,7 +11,7 @@ EXTRA_OECONF_stordis-bf2556x-1t += "--prefix=${STAGING_DIR} --with-tof-brgup-pla
 EXTRA_OECONF_stordis-bf6064x-t += "--prefix=${STAGING_DIR} --with-libtool-sysroot=${STAGING_DIR}"
 COMPATIBLE_MACHINE = "(stordis-bf2556x-1t|stordis-bf6064x-t)"
 
-SDEPATCH_stordis-bf2556x-1t = "./platforms/bf2556x_1t.diff"
+SDEPATCH_stordis-bf2556x-1t = "bf2556x_1t.diff"
 SDEPATCH_stordis-bf6064x-t = "bf6064x_t.diff"
 
 extract2() {
